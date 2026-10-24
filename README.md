@@ -37,6 +37,12 @@ Or skip it: roll a random life, or start in one tap as The Socialite, The Surviv
 - **Random events.** Festivals, crackdowns, fevers, cutpurses, admirers, shakedowns, rival houses, staff squabbles.
 - **Five endings.** Retire wealthy, claim the city's finest house, leave with a lord, run away to sea, or burn out.
 
+## Narration
+
+Encounter descriptions live in `narration.js`, separate from the game logic, so you can rewrite or extend them freely. Each turn the game combines a line for the technique or approach you used (success, failure or repetition), a line if the client loves or dislikes it, and a reaction line based on how close they are. Lines never repeat until the rest of their list has been used.
+
+Lines support tokens such as `{client}`, `{name}`, `{they}`, `{their}` and `{move}`; the header of `narration.js` explains them all. Players can switch between full and brief narration in the Journal tab. If `narration.js` is missing, the game falls back to short mechanical text.
+
 ## Interface
 
 Mobile-first layout with a persistent HUD, a scene card for what's happening now, and tabs for **Work**, **Self** (character sheet), **House** (progress, money, staff, people), **Market**, and **Journal** (ledger, full log, save/load). Stat changes appear as chips after every action, and dice rolls are shown with the full math.

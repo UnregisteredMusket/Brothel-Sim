@@ -195,6 +195,7 @@
 </div>
 <nav class="tabs"><div class="inner" id="tabs"></div></nav>
 
+<script src="narration.js"></script>
 <script>
 "use strict";
 window.onerror = function (msg, src, line) {
@@ -393,6 +394,7 @@ const state = {
   phaseMods: { payMult: 1, trouble: 0, extraClients: 0, label: "" },
   upgrades: {},
   story: {},
+  settings: { narration: "full" },
   ended: false,
   character: { name: "", gender: "female", motivation: null, appearance: "average", build: "average", experience: "novice", class: null, subclass: null, background: null, feat: null, traits: [] },
   traitPoints: 0,
@@ -869,6 +871,9 @@ const UI = {
         <span>Coin earned</span><span>${s.coinEarned}</span>
         ${types}
       </div>`);
+    const np = UI.panel(v, "Settings", "");
+    const full = (state.settings || {}).narration !== "brief";
+    UI.addChoices(np, [{ label: `Encounter narration: ${full ? "Full" : "Brief"}`, hint: full ? "Descriptive lines every turn · tap for short mechanical text" : "Short mechanical text · tap for descriptive lines", disabled: !Narrator.data(), reason: "narration.js not found", action: () => { state.settings = { ...(state.settings || {}), narration: full ? "brief" : "full" }; UI.renderView(); } }]);
     const p = UI.panel(v, "Save", "The game also saves itself at every dawn.");
     UI.addChoices(p, [
       { label: "Save game", action: () => Game.save(true) },
@@ -877,6 +882,80 @@ const UI = {
     ]);
     UI.panel(v, "Journal", "Most recent first.",
       state.journal.length ? state.journal.map(e => `<div class="entry ${e.k === "roll" ? "roll-entry" : ""}"><div class="when">Day ${e.d} · ${e.p}</div>${e.t}</div>`).join("") : `<div class="empty">Nothing written yet.</div>`);
+  }
+};
+
+/* =========================================================
+   NARRATOR — reads lines from narration.js (window.NARRATION)
+   ========================================================= */
+const NPC_GENDER = { marlow: "male", edric: "male", briar: "female" };
+const CLIENT_PRONOUNS = {
+  male: { they: "he", them: "him", their: "his", themself: "himself", s: "s", are: "is" },
+  female: { they: "she", them: "her", their: "her", themself: "herself", s: "s", are: "is" },
+  they: { they: "they", them: "them", their: "their", themself: "themself", s: "", are: "are" }
+};
+const Narrator = {
+  used: {},
+  data() { return typeof window !== "undefined" && window.NARRATION && typeof window.NARRATION === "object" ? window.NARRATION : null; },
+  on() { return !!this.data() && (state.settings || {}).narration !== "brief"; },
+  pick(key, list) {
+    if (!Array.isArray(list) || !list.length) return null;
+    let used = this.used[key] || [];
+    let idx = list.map((_, i) => i).filter(i => !used.includes(i));
+    if (!idx.length) { used = []; idx = list.map((_, i) => i); }
+    const i = pick(idx);
+    used.push(i);
+    this.used[key] = used;
+    return list[i];
+  },
+  fill(line, e) {
+    if (!line) return "";
+    const pr = CLIENT_PRONOUNS[e.cg] || CLIENT_PRONOUNS.male;
+    const client = e.npc ? e.npc.name : e.patron ? "the patron" : "your client";
+    const map = { name: esc(state.character.name || ""), client, move: (e.curMove || e.item).name, ...pr };
+    return line.replace(/\{(\w+)\}/g, (m, k) => {
+      const lower = k.charAt(0).toLowerCase() + k.slice(1);
+      const v = map[k] !== undefined ? map[k] : map[lower];
+      if (v === undefined) return m;
+      return k !== lower ? cap(String(v)) : String(v);
+    });
+  },
+  line(key, list, e) { return this.fill(this.pick(key, list), e); },
+  band(e) {
+    const pct = 1 - Math.max(0, e.climax) / e.climaxMax;
+    return pct < 0.3 ? "low" : pct < 0.7 ? "mid" : "high";
+  },
+  open(e) {
+    const N = this.data();
+    const parts = [this.line("open:" + e.ctx, (N.open || {})[e.ctx], e)];
+    if (e.revealed) parts.push(this.line("temp:" + e.typeKey, (N.temperament || {})[e.typeKey], e));
+    const t = (N.techniques || {})[e.item.id];
+    if (t) parts.push(this.line("start:" + e.item.id, t.start, e));
+    return parts.filter(Boolean).join(" ");
+  },
+  turn(e, o) {
+    const N = this.data();
+    const res = o.success ? "success" : "fail";
+    const parts = [];
+    const tech = (N.techniques || {})[o.pos.id] || {};
+    const sk = (N.skills || {})[o.pos.skill] || {};
+    const def = (N.skills || {})._default || {};
+    if ((o.kind === "work" || o.kind === "focus") && o.switched && tech.start) parts.push(this.line("start:" + o.pos.id, tech.start, e));
+    let main = null;
+    if (o.kind !== "work" && N.approaches && N.approaches[o.kind]) main = this.line(`ap:${o.kind}:${res}`, N.approaches[o.kind][res], e);
+    else if (o.repeat) main = this.line(`rep:${o.pos.id}`, tech.repeat || sk.repeat || def.repeat, e);
+    else main = this.line(`${o.pos.id}:${res}`, tech[res], e) || this.line(`sk:${o.pos.skill}:${res}`, sk[res], e) || this.line(`def:${res}`, def[res], e);
+    if (main) parts.push(main);
+    if (o.success && o.liked) parts.push(this.line("liked", N.liked, e));
+    else if (o.success && o.disliked) parts.push(this.line("disliked", N.disliked, e));
+    const band = this.band(e);
+    parts.push(this.line("react:" + band, (N.reactions || {})[band], e));
+    return parts.filter(Boolean).join(" ");
+  },
+  finish(e, success) {
+    const N = this.data();
+    const k = success ? "success" : "fail";
+    return this.line("fin:" + k, (N.finish || {})[k], e);
   }
 };
 
@@ -1015,6 +1094,7 @@ const Game = {
 
     this.offer = {
       item, ctx, prefs, type, patron, npc,
+      cg: npc ? NPC_GENDER[npc.id] : (Math.random() < 0.7 ? "male" : "female"),
       baseDC: dc,
       gross: grossPay(ctx, item, patron),
       stress: ctx === "street" ? 5 : 3,
@@ -1096,12 +1176,14 @@ const Game = {
     state.stress = clamp(state.stress + t.stress, 0, 100);
     state.encounter = {
       item: o.item, skill: o.item.skill, ctx: o.ctx, prefs: o.prefs, type: o.type, typeKey: o.type.key, revealed: o.revealed,
-      patron: o.patron, npc: o.npc, dc: t.dc, gross: t.gross,
+      patron: o.patron, npc: o.npc, cg: o.cg, curMove: o.item, dc: t.dc, gross: t.gross,
       climax: max, climaxMax: max, round: 1, maxRounds: 5,
       advantageRounds: adv, lastMoveId: null, repeat: 0, combo: 0,
       text: t.note || "You lead them to somewhere private."
     };
     this.offer = null;
+    const en = state.encounter;
+    if (Narrator.on()) en.text = (t.note ? t.note + " " : "") + Narrator.open(en);
     this.encounterRound();
   },
 
@@ -1143,7 +1225,7 @@ const Game = {
     UI.scene({
       kicker: `Round ${e.round} of ${e.maxRounds} · ${e.item.name}`,
       title: e.npc ? e.npc.name : e.patron ? "A wealthy patron" : "Your client",
-      body: `${e.text}\n<em>They are ${mood}.</em>`,
+      body: Narrator.on() ? e.text : `${e.text}\n<em>They are ${mood}.</em>`,
       meter: { label: "Satisfaction", value: pct, pips: { max: e.maxRounds, used: e.round - 1 } },
       roll: this.lastRoll, chips
     });
@@ -1190,6 +1272,10 @@ const Game = {
     let stress = p.stress;
     const verb = { tease: "You tease them with words and a slow touch.", focus: `You throw yourself into ${pos.name}.`, recover: "You slow down and steady yourself.", command: "You take control of the pace." }[kind] || `You move into ${pos.name}.`;
     let text = verb;
+    const isTech = kind === "work" || kind === "focus";
+    const liked = isTech && e.prefs.likes.includes(pos.id), disliked = isTech && e.prefs.dislikes.includes(pos.id);
+    const switched = isTech && e.curMove && e.curMove.id !== pos.id;
+    if (isTech) e.curMove = pos;
 
     if (r.success) {
       let dealt = p.dmg + Math.max(0, Math.floor((r.total - p.dc) / 3));
@@ -1215,7 +1301,7 @@ const Game = {
     e.repeat = p.repeat;
     e.lastMoveId = p.moveId;
     e.round++;
-    e.text = text;
+    e.text = Narrator.on() ? Narrator.turn(e, { kind, pos, success: r.success, repeat: p.repeat, liked, disliked, switched }) : text;
     if (state.stress >= 100) { e.text += " Something in you gives way. You can't go on."; this.finishEncounter(false); return; }
     this.encounterRound();
   },
@@ -1326,6 +1412,7 @@ const Game = {
 
     const pay = r.coin ? `You earn <b>${r.coin}</b> coin${r.tip ? ` (including a ${Math.floor(r.tip * netFactor(e.ctx))} tip)` : ""}${e.ctx === "brothel" ? " after the house's cut" : ""}.` : "You earn nothing.";
     lines.unshift(`${pay} +${rep} reputation.`);
+    if (!troubleText && Narrator.on()) { const fin = Narrator.finish(e, r.success); if (fin) lines.unshift(fin + "\n"); }
     this.log(`${r.success ? "Satisfied" : "Unsatisfied"}: ${e.npc ? e.npc.name : "client"}, ${r.coin} coin.`);
     this.lastRoll = null;
     this.outcome(r.success ? "They leave satisfied" : "They leave unsatisfied", lines.join("\n"), null, { kicker: e.item.name, roll: troubleRoll || null });
