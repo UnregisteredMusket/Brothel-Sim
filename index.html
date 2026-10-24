@@ -72,6 +72,24 @@
   .kicker { font-size: .7rem; letter-spacing: .14em; text-transform: uppercase; color: var(--mute); }
   .scene h2 { font-family: "Cormorant Garamond", Georgia, serif; font-size: 1.6rem; margin: 2px 0 8px; color: var(--gold); font-weight: 600; line-height: 1.12; }
   .body { white-space: pre-line; }
+  .act { display: flex; align-items: center; gap: 12px; margin: 12px 0 0; padding: 10px 12px; border: 1px solid var(--line2); border-radius: 10px; background: #160f0c; }
+  .act-ico svg { width: 42px; height: 42px; stroke: var(--gold); fill: none; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; display: block; }
+  .act-txt { flex: 1; min-width: 0; }
+  .act-k { font-size: .66rem; letter-spacing: .12em; text-transform: uppercase; color: var(--mute); }
+  .act-n { font-family: "Cormorant Garamond", Georgia, serif; font-size: 1.2rem; line-height: 1.15; }
+  .act-p { font-size: .8rem; color: var(--ink2); }
+  .mast { font-family: "EB Garamond", Georgia, serif; font-size: .7rem; color: var(--gold); border: 1px solid #7a6232; border-radius: 999px; padding: 0 6px; vertical-align: middle; }
+  .heat { display: flex; gap: 1px; }
+  .heat svg { width: 15px; height: 15px; stroke: #5a4431; fill: none; stroke-width: 1.6; display: block; }
+  .heat .on svg { stroke: var(--c-stress); fill: #e0705a55; }
+  .party { display: grid; grid-template-columns: repeat(auto-fit, minmax(110px, 1fr)); gap: 6px; margin-top: 8px; }
+  .pm { display: flex; gap: 8px; align-items: center; border: 1px solid var(--line); border-radius: 8px; padding: 6px 8px; font-size: .8rem; }
+  .pm.on { border-color: var(--gold); background: #22180f; }
+  .pm.done { opacity: .55; }
+  .pmt { flex: 1; min-width: 0; } .pmm { color: var(--mute); font-size: .72rem; }
+  .pm .track { margin: 2px 0; }
+  .av { width: 26px; height: 26px; flex: none; border-radius: 50%; display: grid; place-items: center; font-family: "Cormorant Garamond", Georgia, serif; font-weight: 700; color: #0f0b09; }
+  .av.male { background: #8fb4d9; } .av.female { background: #d98ab0; }
   .speech { position: relative; margin: 4px 0 12px; padding: 10px 14px; background: #2a1f17; border: 1px solid var(--line2); border-radius: 12px 12px 12px 3px; font-style: italic; color: var(--ink); }
   .body em { color: var(--ink2); }
   .chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 12px; }
@@ -221,13 +239,13 @@ const LOW_HEALTH_DISADVANTAGE = 25;
 /* ---------- The guild ---------- */
 // trial: how the promotion to this rank is earned. demote: you drop a rank when Standing falls below (standing - 20).
 const RANKS = [
-  { name: "Initiate", standing: 0, level: 1, fame: 0, purse: 0 },
-  { name: "Companion", standing: 30, level: 2, fame: 10, purse: 40, trial: "encounter" },
-  { name: "Consort", standing: 80, level: 3, fame: 30, purse: 80, trial: "court" },
-  { name: "Favored", standing: 150, level: 4, fame: 60, purse: 130, trial: "encounter" },
-  { name: "Celebrated", standing: 240, level: 6, fame: 100, purse: 200, trial: "court" },
-  { name: "Paragon", standing: 350, level: 7, fame: 150, purse: 300, trial: "encounter" },
-  { name: "Guild Master", standing: 480, level: 9, fame: 210, purse: 0, trial: "final" }
+  { name: "Initiate", clients: 0, standing: 0, level: 1, fame: 0, purse: 0 },
+  { name: "Companion", clients: 3, standing: 30, level: 2, fame: 10, purse: 40, trial: "encounter" },
+  { name: "Consort", clients: 10, standing: 80, level: 3, fame: 30, purse: 80, trial: "court" },
+  { name: "Favored", clients: 22, standing: 150, level: 4, fame: 60, purse: 130, trial: "encounter" },
+  { name: "Celebrated", clients: 38, standing: 240, level: 6, fame: 100, purse: 200, trial: "court" },
+  { name: "Paragon", clients: 58, standing: 350, level: 7, fame: 150, purse: 300, trial: "encounter" },
+  { name: "Guild Master", clients: 80, standing: 480, level: 9, fame: 210, purse: 0, trial: "final" }
 ];
 const DEMOTE_MARGIN = 20; // plus 10% of the rank's threshold
 function demoteFloor(r) { return RANKS[r].standing - DEMOTE_MARGIN - Math.round(RANKS[r].standing * 0.1); }
@@ -275,8 +293,8 @@ const SURNAMES = ["Ashby", "Morrow", "Vane", "Delacroix", "Thorne", "Halloway", 
 const TONES = {
   flatter: { name: "Flatter", skill: "persuasion", lines: ["\"I noticed you the moment you walked in.\"", "\"Everyone else here seems dull beside you.\"", "\"You have the finest taste in the room.\"", "\"I'd heard you were remarkable. They undersold it.\""] },
   wit: { name: "Wit", attr: "int", lines: ["\"Only if the wine improves first.\"", "\"I'd answer, but I'd hate to ruin the mystery.\"", "\"Half this room is pretending to be bored. The other half isn't pretending.\"", "\"I'll trade you a secret for a better one.\""] },
-  coy: { name: "Coy", skill: "performance", lines: ["\"Perhaps. Ask me again later.\"", "\"You'll have to work harder than that.\"", "\"I'm not sure I should tell you.\"", "\"That depends entirely on you.\""] },
-  bold: { name: "Bold", skill: "kink", lines: ["\"Let's skip the pleasantries. I like you.\"", "\"Take my arm. We're leaving this conversation for a better one.\"", "\"You've been staring. I don't mind.\"", "\"Ask me what you actually want to ask.\""] },
+  coy: { name: "Coy", attr: "dex", lines: ["\"Perhaps. Ask me again later.\"", "\"You'll have to work harder than that.\"", "\"I'm not sure I should tell you.\"", "\"That depends entirely on you.\""] },
+  bold: { name: "Bold", attr: "str", lines: ["\"Let's skip the pleasantries. I like you.\"", "\"Take my arm. We're leaving this conversation for a better one.\"", "\"You've been staring. I don't mind.\"", "\"Ask me what you actually want to ask.\""] },
   listen: { name: "Listen", skill: "insight", lines: ["\"Go on. I want to hear the rest.\"", "\"That sounds like it mattered to you.\"", "\"What happened next?\"", "\"Tell me more about that.\""] }
 };
 
@@ -309,15 +327,21 @@ const INDEX = {
     { id: "reverse_cowgirl", name: "Reverse Cowgirl", skill: "vaginal", risk: 1, difficulty: "Beginner" },
     { id: "doggy_style", name: "Doggy Style", skill: "vaginal", risk: 1, difficulty: "Beginner" },
     { id: "spooning", name: "Spooning", skill: "vaginal", risk: 1, difficulty: "Beginner" },
-    { id: "standing", name: "Standing", skill: "vaginal", risk: 2, difficulty: "Intermediate" },
-    { id: "69", name: "69", skill: "oral", risk: 2, difficulty: "Intermediate" },
-    { id: "lotus", name: "Lotus", skill: "vaginal", risk: 2, difficulty: "Intermediate" },
-    { id: "pretzel_dip", name: "Pretzel Dip", skill: "vaginal", risk: 2, difficulty: "Intermediate" },
+    { id: "standing", name: "Standing", skill: "vaginal", risk: 2, difficulty: "Intermediate", req: 20 },
+    { id: "69", name: "69", skill: "oral", risk: 2, difficulty: "Intermediate", req: 20 },
+    { id: "lotus", name: "Lotus", skill: "vaginal", risk: 2, difficulty: "Intermediate", req: 20 },
+    { id: "pretzel_dip", name: "Pretzel Dip", skill: "vaginal", risk: 2, difficulty: "Intermediate", req: 20 },
     { id: "coital_alignment_techniq", name: "Coital Alignment", skill: "vaginal", risk: 1, difficulty: "Beginner" },
     { id: "leapfrog", name: "Leapfrog", skill: "vaginal", risk: 1, difficulty: "Beginner" },
     { id: "scissoring", name: "Scissoring", skill: "manual", risk: 1, difficulty: "Beginner" },
     { id: "tabletop", name: "Tabletop", skill: "vaginal", risk: 1, difficulty: "Beginner" },
-    { id: "side_by_side_face-to-fac", name: "Side by Side", skill: "vaginal", risk: 1, difficulty: "Beginner" }
+    { id: "side_by_side_face-to-fac", name: "Side by Side", skill: "vaginal", risk: 1, difficulty: "Beginner" },
+    { id: "slow_burn", name: "Slow Burn", skill: "manual", risk: 1, difficulty: "Advanced", req: 30 },
+    { id: "the_throne", name: "The Throne", skill: "oral", risk: 2, difficulty: "Advanced", req: 30 },
+    { id: "butterfly", name: "Butterfly", skill: "vaginal", risk: 2, difficulty: "Advanced", req: 35 },
+    { id: "anal", name: "Anal", skill: "anal", risk: 3, difficulty: "Advanced", req: 15 },
+    { id: "bridge", name: "The Bridge", skill: "vaginal", risk: 3, difficulty: "Expert", req: 55 },
+    { id: "tantric_union", name: "Tantric Union", skill: "vaginal", risk: 3, difficulty: "Master", req: 75 }
   ],
   kinks: [
     { id: "bondage", name: "Bondage", skill: "kink", risk: 3 },
@@ -335,15 +359,63 @@ const INDEX = {
   ]
 };
 
+const CLASS_KINKS = {
+  Courtesan: ["roleplay", "praise_kink"],
+  Streetwalker: ["dirty_talk", "exhibitionism"],
+  Dominatrix: ["bondage", "dominance_and_submission", "impact_play"],
+  "Flesh Healer": ["temperature_play", "sensory_deprivation"]
+};
+
+/* What each technique is, for the scene panel: icon, kind of act, and pose. */
+const TECH_INFO = {
+  missionary: ["face", "Intercourse", "Face to face"], cowgirl: ["ontop", "Intercourse", "You on top"],
+  reverse_cowgirl: ["ontop", "Intercourse", "On top, facing away"], doggy_style: ["behind", "Intercourse", "From behind"],
+  spooning: ["side", "Intercourse", "Side by side, from behind"], standing: ["standing", "Intercourse", "Standing, against the wall"],
+  "69": ["oral", "Oral", "Mutual"], lotus: ["seated", "Intercourse", "Seated, face to face"],
+  pretzel_dip: ["grind", "Intercourse", "Legs entwined"], coital_alignment_techniq: ["face", "Intercourse", "Face to face, slow grind"],
+  leapfrog: ["behind", "Intercourse", "From behind, low"], scissoring: ["grind", "Grinding", "Legs entwined"],
+  tabletop: ["standing", "Intercourse", "On the table's edge"], "side_by_side_face-to-fac": ["face", "Intercourse", "Side by side, face to face"],
+  slow_burn: ["manual", "Manual", "Massage"], the_throne: ["oral", "Oral", "Partner enthroned"],
+  butterfly: ["face", "Intercourse", "Raised, face to face"], anal: ["behind", "Anal", "From behind"],
+  bridge: ["ontop", "Intercourse", "Arched, athletic"], tantric_union: ["seated", "Intercourse", "Seated, breathing as one"],
+  bondage: ["rope", "Kink", "Restraint"], spanking: ["impact", "Kink", "Across your lap"], roleplay: ["mask", "Play", "Roleplay"],
+  sensory_deprivation: ["blind", "Kink", "Blindfolded"], temperature_play: ["flame", "Kink", "Hot and cold"],
+  dominance_and_submission: ["crown", "Kink", "Power"], praise_kink: ["voice", "Play", "Words of praise"],
+  dirty_talk: ["voice", "Play", "Whispered words"], voyeurism: ["eye", "Play", "Watching, untouched"],
+  exhibitionism: ["eye", "Play", "Risk of being seen"], foot_fetish: ["feet", "Fetish", "Feet"], impact_play: ["impact", "Kink", "Impact"]
+};
+const ICON_PATHS = {
+  face: '<circle cx="8" cy="12" r="5"/><circle cx="16" cy="12" r="5"/>',
+  ontop: '<circle cx="12" cy="7.5" r="4.5"/><circle cx="12" cy="16.5" r="4.5"/>',
+  behind: '<circle cx="9" cy="12" r="4.5"/><circle cx="16.5" cy="12" r="4.5"/><path d="M2.5 12h2"/>',
+  side: '<path d="M4 17a8 8 0 0 1 8-8"/><path d="M8 20a8 8 0 0 1 8-8"/><circle cx="16" cy="6" r="2"/>',
+  standing: '<circle cx="9" cy="5.5" r="2.5"/><circle cx="15" cy="5.5" r="2.5"/><path d="M9 9v11M15 9v11M9 13h6"/>',
+  seated: '<circle cx="12" cy="6.5" r="3"/><path d="M4 18c3-5 13-5 16 0"/><path d="M7 21h10"/>',
+  oral: '<path d="M3 12c3-4 6-4 9-2 3-2 6-2 9 2-3 4.5-15 4.5-18 0z"/><path d="M3 12h18"/>',
+  manual: '<path d="M8 13V6a1.5 1.5 0 0 1 3 0v5M11 11V4.5a1.5 1.5 0 0 1 3 0V11M14 11V6a1.5 1.5 0 0 1 3 0v8a6 6 0 0 1-6 6h-1a5 5 0 0 1-4-2l-3-4a1.5 1.5 0 0 1 2.2-2L8 14"/>',
+  grind: '<path d="M4 7l16 10M4 17l16-10"/><circle cx="12" cy="12" r="2"/>',
+  rope: '<path d="M4 8c4 0 4 8 8 8s4-8 8-8M4 16c4 0 4-8 8-8s4 8 8 8"/>',
+  impact: '<rect x="9" y="2.5" width="6" height="11" rx="3"/><path d="M12 13.5v8"/>',
+  mask: '<path d="M3 9c3-2 15-2 18 0 0 5-3 8-6 8-1.5 0-2-2-3-2s-1.5 2-3 2c-3 0-6-3-6-8z"/><circle cx="8.5" cy="11" r="1.5"/><circle cx="15.5" cy="11" r="1.5"/>',
+  blind: '<path d="M3 12c4 4 14 4 18 0"/><path d="M6 15l-1.5 2.5M12 16.5v2.5M18 15l1.5 2.5"/>',
+  flame: '<path d="M12 3c1 4 6 6 6 11a6 6 0 0 1-12 0c0-3 2-4 3-6 0 2 1 3 2 3 0-3-1-5 1-8z"/>',
+  crown: '<path d="M3 18h18l-2-10-4 4-3-6-3 6-4-4z"/>',
+  voice: '<path d="M4 5h16v10H9l-5 4z"/><path d="M8 9h8M8 12h5"/>',
+  eye: '<path d="M2 12c4-6 16-6 20 0-4 6-16 6-20 0z"/><circle cx="12" cy="12" r="3"/>',
+  feet: '<ellipse cx="12" cy="15" rx="3.5" ry="5"/><circle cx="9" cy="7" r="1.2"/><circle cx="12" cy="6" r="1.3"/><circle cx="15" cy="7" r="1.2"/>',
+  heart: '<path d="M12 20s-7-4.5-7-10a4 4 0 0 1 7-2.5A4 4 0 0 1 19 10c0 5.5-7 10-7 10z"/>'
+};
+function svgIcon(name) { return `<svg viewBox="0 0 24 24" aria-hidden="true">${ICON_PATHS[name] || ICON_PATHS.heart}</svg>`; }
+
 const SKILL_LABEL = { oral: "Oral", vaginal: "Vaginal", anal: "Anal", manual: "Manual", kink: "Kink", performance: "Performance", persuasion: "Persuasion", insight: "Insight" };
 const SKILL_ATTR = { oral: "dex", vaginal: "con", anal: "con", manual: "dex", kink: "cha", performance: "cha", persuasion: "cha", insight: "wis" };
 const ATTR_USE = {
-  str: "Fighting free of trouble",
-  dex: "Oral, Manual, sleight of hand",
+  str: "Bold in courtship, fighting free of trouble",
+  dex: "Oral, Manual, Coy in courtship",
   con: "Vaginal, Anal, enduring",
   int: "Wit in courtship",
-  wis: "Insight: reading people",
-  cha: "Kink, Performance, Persuasion, Control"
+  wis: "Insight: reading people, Listen in courtship",
+  cha: "Kink, Performance, Persuasion (Flatter), Control"
 };
 
 const CLIENT_TYPES = {
@@ -404,7 +476,35 @@ const FEATURE_INFO = {
   streetSmart: ["Street Smart", "Trouble finds you less often"],
   haunted: ["Haunted", "+1 trauma whenever an encounter goes badly"],
   timid: ["Timid", "Started with 10 less Control"],
-  marked: ["Marked", "Trouble finds you more often"]
+  marked: ["Marked", "Trouble finds you more often"],
+  lucky: ["Lucky Star", "Once a day, your first failed roll is rerolled"],
+  quickStudy: ["Quick Study", "+25% experience"],
+  tireless: ["Tireless", "−1 energy on every encounter round"],
+  courtlyGrace: ["Courtly Grace", "−1 difficulty in every courtship"],
+  crowdPleaser: ["Crowd Pleaser", "More of your attention spills over in group encounters"],
+  hardy: ["Hardy", "Lose 5 less health whenever you're hurt"],
+  clumsy: ["Clumsy", "Any roll of 1 or 2 fails"],
+  shyCrowds: ["Shy in Crowds", "+2 difficulty in group encounters and at court"],
+  expensiveTastes: ["Expensive Tastes", "Lodging costs 50% more"],
+  gossipMagnet: ["Gossip Magnet", "Rumors find you more; snubs cost more standing"],
+  restless: ["Restless Sleeper", "Resting restores 6 less energy"],
+  beautyMark: ["Beauty mark", "+5 starting interest in courtships"],
+  tattoo: ["Sailor's tattoo", "+15% pay in Saltmere and Ashford; −5 interest at salons and court"],
+  scar: ["Old scar", "+2 when trouble starts; −1 pay"],
+  freckles: ["Freckles", "+1 on checks with nervous clients"],
+  honeyVoice: ["Honeyed voice", "+1 Persuasion and Flatter"],
+  huskyVoice: ["Husky voice", "+1 Kink and Bold"],
+  softVoice: ["Soft-spoken", "+1 Insight and Listen"],
+  brightVoice: ["Bright voice", "+1 Performance and Coy"],
+  insatiable: ["Insatiable", "+1 round in every encounter"],
+  showstopper: ["Showstopper", "Advantage on the first round of every encounter"],
+  ringmaster: ["Ringmaster", "Group encounters: +1 round, stronger Bring Them Together"],
+  unflappable: ["Unflappable", "Every stress gain is reduced by 1"],
+  brawler: ["Brawler", "+3 on Strength checks"],
+  bargainer: ["Shrewd Bargainer", "+10% pay"],
+  ropeMaster: ["Master of Ropes", "+2 Kink; Bondage and Dominance pay 20% more"],
+  salonLion: ["Salon Lion", "+1 to every courtship tone; snubs cost no standing"],
+  oracle: ["Read Like a Book", "+3 when sizing people up or reading them"]
 };
 
 const MARKET = [
@@ -430,6 +530,28 @@ const ENDINGS = {
 /* =========================================================
    STATE
    ========================================================= */
+// Body. Order matters: options run from smallest to largest. Clients with a taste for big or small
+// love one end and dislike the other, so the extremes win you devotees and critics alike.
+const BODY = {
+  hairLen: { label: "Hair length", opts: ["Cropped", "Shoulder-length", "Long", "Waist-length"] },
+  bust: { label: "Bust", g: "female", opts: ["Small", "Modest", "Full", "Ample", "Enormous"] },
+  chest: { label: "Chest", g: "male", opts: ["Slim", "Toned", "Broad", "Barrel"] },
+  rear: { label: "Rear", opts: ["Petite", "Pert", "Round", "Generous", "Enormous"] },
+  thighs: { label: "Thighs", opts: ["Slim", "Toned", "Soft", "Thick"] },
+  grooming: { label: "Grooming", opts: ["Bare", "Trimmed", "Natural"], flat: true },
+  endowment: { label: "Endowment", g: "male", opts: ["Modest", "Average", "Generous", "Enormous"] }
+};
+const BODY_DEFAULT = { hairLen: "Long", bust: "Full", chest: "Toned", rear: "Round", thighs: "Toned", grooming: "Trimmed", endowment: "Average" };
+const BODY_TASTE = {
+  hairLen: { big: "loves long, loose hair", small: "likes hair cropped short" },
+  bust: { big: "has an eye for a generous bust", small: "prefers a small, neat bust" },
+  chest: { big: "likes a broad chest", small: "likes a slim, smooth chest" },
+  rear: { big: "can't resist a generous backside", small: "likes a petite, pert behind" },
+  thighs: { big: "loves thick, soft thighs", small: "prefers slim, long legs" },
+  endowment: { big: "hopes for someone generously endowed", small: "is wary of anyone too generously endowed" },
+  grooming: { Bare: "prefers a companion who is smooth and bare", Trimmed: "likes a companion neatly trimmed", Natural: "likes a companion left natural" }
+};
+const bodyParts = g => Object.keys(BODY).filter(k => !BODY[k].g || BODY[k].g === g);
 const state = {
   city: "saltmere",
   rank: 0,
@@ -457,22 +579,28 @@ const state = {
   inspiration: 0,
   exhaustion: 0,
   pendingLevelUps: 0,
+  pendingFeats: 0,
+  feats: [],
+  mastery: {},
+  knownKinks: [],
+  courtLog: {},
   notices: [],
-  flags: { restedThisPhase: false, clientsThisPhase: 0, courtedThisPhase: false, trialDay: 0, questTried: {} },
+  flags: { restedThisPhase: false, clientsThisPhase: 0, courtedThisPhase: false, trainedThisPhase: false, trialDay: 0, luckyDay: 0, questTried: {} },
   phaseMods: { payMult: 1, trouble: 0, extraClients: 0, label: "" },
   upgrades: {},
   story: {},
   quests: {},
+  contracts: { board: [], active: [], refreshed: 0, city: "", seq: 0, done: 0, failed: 0 },
   visited: { saltmere: true },
   settings: { narration: "full" },
   ironman: false,
   ended: false,
-  character: { name: "", gender: "female", motivation: null, appearance: "average", build: "average", experience: "novice", class: null, subclass: null, background: null, feat: null, traits: [] },
+  character: { name: "", gender: "female", clientele: "anyone", hair: "", eyes: "", mark: "none", voice: "", body: { ...BODY_DEFAULT }, specialties: [], limits: [], motivation: null, appearance: "average", build: "average", experience: "novice", class: null, subclass: null, background: null, feat: null, traits: [] },
   traitPoints: 0,
   classFeatures: {},
   knownPositions: ["missionary"],
   encounter: null,
-  stats: { daysPlayed: 1, bodyCount: 0, encounters: 0, successes: 0, failures: 0, coinEarned: 0, troubles: 0, courtships: 0, courtWins: 0, questsDone: 0, demotions: 0, byType: {} },
+  stats: { daysPlayed: 1, bodyCount: 0, groups: 0, played: {}, encounters: 0, successes: 0, failures: 0, coinEarned: 0, troubles: 0, courtships: 0, courtWins: 0, questsDone: 0, demotions: 0, byType: {} },
   journal: []
 };
 const DEFAULT_STATE = JSON.parse(JSON.stringify(state));
@@ -519,7 +647,14 @@ function controlMod() { return state.control >= 70 ? -2 : state.control <= 30 ? 
 function travelCost(to) { return 6 + 6 * Math.abs(city(to).tier - city().tier); }
 
 function learnPosition(id) {
-  if (!id || state.knownPositions.includes(id) || !isPosition(id)) return false;
+  if (!id) return false;
+  if (isKink(id)) {
+    state.knownKinks = state.knownKinks || [];
+    if (state.knownKinks.includes(id) || (state.character.limits || []).includes(id)) return false;
+    state.knownKinks.push(id);
+    return true;
+  }
+  if (state.knownPositions.includes(id) || !isPosition(id)) return false;
   state.knownPositions.push(id);
   return true;
 }
@@ -528,9 +663,67 @@ function grantClassPositions(extra) {
   const order = [...(SUBCLASS_POSITIONS[state.character.subclass] || []), ...(CLASS_POSITIONS[state.character.class] || []), ...INDEX.positions.map(p => p.id)];
   for (const id of order) {
     if (learned.length >= extra) break;
-    if (learnPosition(id)) learned.push(getPosition(id).name);
+    if (canLearn(id) && learnPosition(id)) learned.push(getPosition(id).name);
   }
   return learned;
+}
+
+/* ---------- Skill growth, mastery and unlocks ---------- */
+const MASTERY_AT = [0, 10, 30, 60];
+const MASTERY_NAMES = ["", "Practiced", "Expert", "Master"];
+function masteryTier(id) { const v = (state.mastery || {})[id] || 0; return v >= MASTERY_AT[3] ? 3 : v >= MASTERY_AT[2] ? 2 : v >= MASTERY_AT[1] ? 1 : 0; }
+function techBonus(id) { return masteryTier(id) + ((state.character.specialties || []).includes(id) ? 2 : 0); }
+function readBonus() { return (state.classFeatures.keenEye ? 2 : 0) + (state.classFeatures.oracle ? 3 : 0); }
+function knownKinks() { return state.knownKinks || []; }
+function knows(id) { return isPosition(id) ? state.knownPositions.includes(id) : knownKinks().includes(id); }
+function canLearn(id) { const p = INDEX.positions.find(x => x.id === id); return !!p && (state.skills[p.skill] || 0) >= (p.req || 0); }
+function checkUnlocks() {
+  const out = [];
+  INDEX.positions.forEach(p => { if (p.req && !state.knownPositions.includes(p.id) && canLearn(p.id)) { state.knownPositions.push(p.id); out.push(p.name); } });
+  return out;
+}
+function nextUnlock(sk) {
+  const c = INDEX.positions.filter(p => p.skill === sk && p.req && !state.knownPositions.includes(p.id)).sort((a, b) => a.req - b.req)[0];
+  return c ? `${c.name} at ${c.req}` : "";
+}
+function trainFromRound(skill, techId, ok) {
+  if (ok) state.skills[skill] = Math.min(100, (state.skills[skill] || 0) + 1);
+  if (ok && skill === "vaginal" && Math.random() < 0.34) state.skills.anal = Math.min(100, state.skills.anal + 1);
+  if (techId) state.mastery[techId] = Math.min(MASTERY_AT[3], (state.mastery[techId] || 0) + (ok ? 2 : 1));
+}
+function gainXp(n) { state.xp += Math.round(n * (state.classFeatures.quickStudy ? 1.25 : 1)); }
+function clientGender() { const p = (CLIENTELE[state.character.clientele] || CLIENTELE.anyone).male; return Math.random() < p ? "male" : "female"; }
+function lodging() { return Math.round(city().upkeep * (state.classFeatures.expensiveTastes ? 1.5 : 1)); }
+function hurtAmt(n) { return Math.max(0, n - (state.classFeatures.hardy ? 5 : 0)); }
+function societyFatigue() { return Math.max(0, (state.courtLog[state.city] || []).filter(d => d >= state.day - 2).length - 1); }
+function syncFocus(e) {
+  const m = e.party[e.focus];
+  e.prefs = m.prefs; e.cg = m.cg; e.npc = { id: null, name: m.name };
+  e.climax = m.climax; e.climaxMax = m.max; e.dress = m.dress;
+  const others = e.party.filter((x, i) => i !== e.focus);
+  e.otherName = (others.find(x => x.climax > 0) || others[0]).name;
+}
+const VOICE_SKILL = { honeyVoice: "persuasion", huskyVoice: "kink", softVoice: "insight", brightVoice: "performance" };
+const VOICE_TONE = { honeyVoice: "flatter", huskyVoice: "bold", softVoice: "listen", brightVoice: "coy" };
+function skillExtra(skill) {
+  let b = 0;
+  Object.keys(VOICE_SKILL).forEach(k => { if (state.classFeatures[k] && VOICE_SKILL[k] === skill) b += 1; });
+  if (skill === "kink" && state.classFeatures.ropeMaster) b += 2;
+  return b;
+}
+function actPanel(e, preview) {
+  const mv = e.curMove || e.item;
+  const info = TECH_INFO[mv.id] || ["heart", SKILL_LABEL[mv.skill] || "", ""];
+  const size = e.party ? e.party.length : 1;
+  const grp = size > 1 ? (size === 2 ? "Threesome · " : "Foursome · ") : "";
+  const pct = preview ? 0 : Math.round((1 - Math.max(0, e.climax) / e.climaxMax) * 100);
+  const heat = preview ? 0 : Math.min(5, Math.ceil(pct / 20));
+  const tier = masteryTier(mv.id);
+  const party = e.party && !preview ? `<div class="party">${e.party.map((m, i) => {
+    const p = Math.round((1 - Math.max(0, m.climax) / m.max) * 100);
+    return `<div class="pm ${i === e.focus ? "on" : ""} ${m.climax <= 0 ? "done" : ""}"><span class="av ${m.cg}">${esc(m.name.charAt(0))}</span><div class="pmt"><div>${esc(m.name)}${i === e.focus ? " ✦" : ""}</div><div class="track"><div class="fill" style="width:${clamp(p, 0, 100)}%;background:var(--c-rep)"></div></div><div class="pmm">${m.climax <= 0 ? "Satisfied" : p < 30 ? "Guarded" : p < 70 ? "Warming" : "Close"}</div></div></div>`;
+  }).join("")}</div>` : "";
+  return `<div class="act"><div class="act-ico">${svgIcon(info[0])}</div><div class="act-txt"><div class="act-k">${grp}${info[1]}</div><div class="act-n">${mv.name}${tier ? ` <span class="mast">${MASTERY_NAMES[tier]}</span>` : ""}</div><div class="act-p">${info[2]}${!preview && e.dress !== undefined ? ` · ${e.dress === 2 ? "still dressed" : e.dress === 1 ? "clothes loosened" : "bare"}` : ""}</div></div>${preview ? "" : `<div class="heat" title="Intensity">${[0, 1, 2, 3, 4].map(i => `<span class="${i < heat ? "on" : ""}">${svgIcon("flame")}</span>`).join("")}</div>`}</div>${party}`;
 }
 
 function getSkillBonus(name) {
@@ -557,7 +750,7 @@ function chanceOf(bonus, dc, adv, dis) {
 function skillMeta(skill, opts = {}) {
   return {
     label: SKILL_LABEL[skill] || cap(skill),
-    bonus: getSkillBonus(skill) + (opts.bonus || 0),
+    bonus: getSkillBonus(skill) + skillExtra(skill) + (opts.bonus || 0),
     adv: !!(opts.advantage || (skill === "persuasion" && state.classFeatures.silverTongue)),
     dis: !!(opts.disadvantage || state.health < lowHealthLimit())
   };
@@ -565,13 +758,16 @@ function skillMeta(skill, opts = {}) {
 function attrMeta(attr, opts = {}) {
   return {
     label: attr.toUpperCase(),
-    bonus: getMod(state.attributes[attr]) - (state.exhaustion || 0) + (opts.bonus || 0),
+    bonus: getMod(state.attributes[attr]) - (state.exhaustion || 0) + (opts.bonus || 0) + (attr === "str" && state.classFeatures.brawler ? 3 : 0),
     adv: !!opts.advantage,
     dis: !!(opts.disadvantage || state.health < lowHealthLimit())
   };
 }
 function toneMeta(tone, opts = {}) {
   const t = TONES[tone];
+  let extra = state.classFeatures.salonLion ? 1 : 0;
+  Object.keys(VOICE_TONE).forEach(k => { if (state.classFeatures[k] && VOICE_TONE[k] === tone) extra += 1; });
+  opts = { ...opts, bonus: (opts.bonus || 0) + extra };
   if (t.attr) {
     const m = attrMeta(t.attr, { ...opts, bonus: (opts.bonus || 0) + Math.floor(state.proficiencyBonus / 2) + 1 });
     m.label = t.name;
@@ -589,9 +785,16 @@ function metaFor(spec) {
 }
 function odds(meta, dc) { return chanceOf(meta.bonus, dc, meta.adv, meta.dis); }
 function check(meta, dc) {
-  const d = rollD20(meta.adv, meta.dis);
+  let d = rollD20(meta.adv, meta.dis);
+  const passes = x => x.roll + meta.bonus >= dc && !(state.classFeatures.clumsy && x.roll <= 2);
+  let lucky = false;
+  if (!passes(d) && state.classFeatures.lucky && state.flags.luckyDay !== state.day) {
+    state.flags.luckyDay = state.day;
+    d = rollD20(meta.adv, meta.dis);
+    lucky = true;
+  }
   const total = d.roll + meta.bonus;
-  const r = { label: meta.label, bonus: meta.bonus, dc, total, roll: d.roll, raw: d.raw, type: d.type, success: total >= dc };
+  const r = { label: meta.label + (lucky ? " · Lucky Star" : ""), bonus: meta.bonus, dc, total, roll: d.roll, raw: d.raw, type: d.type, success: passes(d) };
   Game.lastRoll = r;
   Game.log(`${r.label} check: rolled ${r.raw.join("/")}${r.type ? " (" + r.type + ")" : ""} ${sign(r.bonus)} = ${r.total} vs ${dc}. ${r.success ? "Success" : "Failure"}.`, "roll");
   return r;
@@ -609,6 +812,8 @@ function checkLevelUp() {
     const gained = grantClassPositions(state.character.subclass ? 2 : 1);
     msgs.push(`Level ${state.level}!${gained.length ? " You learn " + gained.join(" and ") + "." : ""} Inspiration gained.`);
     state.pendingLevelUps++;
+    if (state.level % 4 === 0) { state.pendingFeats = (state.pendingFeats || 0) + 1; msgs.push("You can choose a new feat."); }
+    if (state.savedFeats) { state.pendingFeats += state.savedFeats; state.savedFeats = 0; }
   }
   return msgs;
 }
@@ -639,6 +844,7 @@ function trialReqs() {
   if (!n) return null;
   return [
     { ok: state.standing >= n.standing, label: "Standing", val: `${state.standing}/${n.standing}` },
+    { ok: state.stats.successes >= n.clients, label: "Satisfied clients", val: `${state.stats.successes}/${n.clients}` },
     { ok: state.level >= n.level, label: "Level", val: `${state.level}/${n.level}` },
     { ok: state.fame >= n.fame, label: "Fame", val: `${state.fame}/${n.fame}` },
     { ok: trialCityOk(), label: n.trial === "final" ? "At the Guild Hall in Valcourt" : `In ${city(CITIES[clamp(state.rank, 0, 5)].id).name} or beyond`, val: trialCityOk() ? "✓" : "travel" }
@@ -661,6 +867,9 @@ function grossPay(item, patron) {
   if (state.character.appearance === "plain") pay = Math.max(4, pay - 2);
   if (state.classFeatures.allure) pay += 2;
   if (state.upgrades.clothes) pay += 2;
+  if (state.classFeatures.scar) pay -= 1;
+  if (state.classFeatures.tattoo && tier <= 1) pay *= 1.15;
+  if (state.classFeatures.bargainer) pay *= 1.1;
   pay *= 1 + state.rank * 0.08;
   pay *= 1 + clamp(state.reputation, 0, 200) / 400;
   if (state.character.motivation === "debt") pay *= 1.1;
@@ -906,19 +1115,36 @@ const UI = {
       Object.keys(state.skills).map(k => UI.bar(SKILL_LABEL[k], state.skills[k], 100, state.skills[k] >= 20 ? "var(--gold)" : "var(--line2)", sign(getSkillBonus(k)))).join(""));
 
     const preferred = [...(CLASS_POSITIONS[c.class] || []), ...(SUBCLASS_POSITIONS[c.subclass] || [])];
-    UI.panel(v, "Techniques", "Class techniques (★) hit harder. Learn more by levelling up or succeeding at a client's request.",
-      `<div class="chips" style="margin-top:0">${state.knownPositions.filter(isPosition).map(id => {
-        const p = getPosition(id);
-        return `<span class="chip ${preferred.includes(id) ? "gold" : ""}">${preferred.includes(id) ? "★ " : ""}${p.name} · ${SKILL_LABEL[p.skill]}</span>`;
-      }).join("")}</div>`);
+    const techChip = (id, extra) => {
+      const t = masteryTier(id);
+      const it = anyItem(id);
+      return `<span class="chip ${preferred.includes(id) ? "gold" : ""}">${preferred.includes(id) ? "★ " : ""}${it.name}${t ? ` · ${MASTERY_NAMES[t]}` : ""}${extra || ""}</span>`;
+    };
+    const locked = INDEX.positions.filter(p => !state.knownPositions.includes(p.id));
+    UI.panel(v, "Techniques", "Using a technique trains its skill and builds mastery: Practiced (+1), Expert (+2), Master (+3). Class techniques (★) hit harder. Train at any guildhouse to improve faster.",
+      `<div class="sub" style="margin:0 0 4px">Positions</div><div class="chips" style="margin-top:0">${state.knownPositions.filter(isPosition).map(id => techChip(id)).join("")}</div>
+       <div class="sub" style="margin:10px 0 4px">Kinks you know</div><div class="chips" style="margin-top:0">${knownKinks().length ? knownKinks().map(id => techChip(id)).join("") : `<span class="empty">None yet — succeed at a client's request to learn one.</span>`}</div>
+       ${locked.length ? `<div class="sub" style="margin:10px 0 4px">Still to learn</div><div class="chips" style="margin-top:0">${locked.map(p => `<span class="chip">${p.name} · ${p.req ? `${SKILL_LABEL[p.skill]} ${state.skills[p.skill]}/${p.req}` : "from a client or level-up"}</span>`).join("")}</div>` : ""}`);
 
-    const feats = Object.keys(state.classFeatures).filter(k => state.classFeatures[k] && FEATURE_INFO[k]);
-    const extras = [];
-    if (c.feat) extras.push(`<div class="feat"><b>Feat:</b> <span>${c.feat}</span></div>`);
-    if (c.appearance === "striking") extras.push(`<div class="feat"><b>Striking looks</b> <span>— +3 pay</span></div>`);
-    if (c.appearance === "plain") extras.push(`<div class="feat"><b>Plain looks</b> <span>— −2 pay</span></div>`);
-    UI.panel(v, "Traits & features", "",
-      (feats.map(k => `<div class="feat"><b>${FEATURE_INFO[k][0]}</b> <span>— ${FEATURE_INFO[k][1]}</span></div>`).join("") + extras.join("")) || `<div class="empty">None yet.</div>`);
+    const specs = (c.specialties || []).map(nameOf), lims = (c.limits || []).map(nameOf);
+    UI.panel(v, "Desires & details", "",
+      `<div class="kv">
+        <span>Specialties</span><span>${specs.length ? specs.join(", ") : "—"}</span>
+        <span>Limits</span><span>${lims.length ? lims.join(", ") : "—"}</span>
+        <span>Clientele</span><span>${(CLIENTELE[c.clientele] || CLIENTELE.anyone).label}</span>
+        <span>Hair · eyes</span><span>${c.hair || "—"} · ${c.eyes || "—"}</span>
+        ${bodyParts(c.gender).map(k => `<span>${BODY[k].label}</span><span>${(c.body || BODY_DEFAULT)[k] || BODY_DEFAULT[k]}</span>`).join("")}
+        <span>Mark · voice</span><span>${(MARKS[c.mark] || MARKS.none).label} · ${(VOICES[c.voice] || { label: "—" }).label}</span>
+      </div>`);
+
+    const featList = (state.feats || []).map(k => FEATS[k] ? `<div class="feat"><b>${FEATS[k].name}</b> <span>— ${FEATS[k].desc}</span></div>` : "").join("");
+    const fp = UI.panel(v, "Feats", "A new feat at levels 4, 8 and 12.", featList || `<div class="empty">No feats yet.</div>`);
+    if (state.pendingFeats > 0) UI.addChoices(fp, [{ label: "Choose your new feat", primary: true, action: () => UI.showTab("work") }]);
+
+    const traitIds = c.traits || [];
+    const traitText = traitIds.map(id => { const t = (typeof TRAITS !== "undefined") && (TRAITS.pos.find(x => x.id === id) || TRAITS.neg.find(x => x.id === id)); return t ? `<div class="feat"><b>${t.name}</b> <span>— ${t.desc}</span></div>` : ""; }).join("");
+    const other = Object.keys(state.classFeatures).filter(k => state.classFeatures[k] && FEATURE_INFO[k] && !(state.feats || []).includes(k)).map(k => `<div class="feat"><b>${FEATURE_INFO[k][0]}</b> <span>— ${FEATURE_INFO[k][1]}</span></div>`).join("");
+    UI.panel(v, "Traits & features", "", (traitText + other) || `<div class="empty">None.</div>`);
   },
 
   viewGuild(v) {
@@ -938,6 +1164,12 @@ const UI = {
 
     const mot = MOTIVES[state.character.motivation];
     if (mot) UI.panel(v, "Your reason", mot.label, `<div class="body">${mot.goal}</div><div class="sub" style="margin:6px 0 0">${mot.progress()}</div>`);
+
+    // Contracts
+    const cs = state.contracts.active;
+    const cp = UI.panel(v, "Contracts", `${cs.length} of ${maxContracts()} taken · ${state.contracts.done} fulfilled, ${state.contracts.failed} broken. A broken contract costs standing.`,
+      cs.length ? cs.map(k => `<div class="staff"><div class="top"><span>${k.title}</span><span style="color:var(--mute);font-size:.8rem">${k.kind === "tally" ? "anywhere" : city(k.city).name} · ${daysLeft(k)}</span></div><div class="sub" style="margin:2px 0 0">${k.short}${k.kind === "tally" ? ` · ${k.have}/${k.need}` : ""}</div></div>`).join("") : `<div class="empty">No contracts. Check the board at any guildhouse.</div>`);
+    UI.addChoices(cp, [{ label: "Read the contract board", action: () => { UI.showTab("work"); Game.board(); } }]);
 
     // Quests
     const qs = QUESTS.filter(q => state.quests[q.id]);
@@ -970,7 +1202,7 @@ const UI = {
         <span>Coin</span><span style="color:var(--c-coin)">${state.coin}</span>
         <span>Debt</span><span style="color:${state.debt ? "var(--bad)" : "inherit"}">${state.debt}${state.debt ? ` · ${Math.max(0, state.debtDays)}d overdue` : ""}</span>
         ${state.debt ? `<span>Interest</span><span>5% daily</span>` : ""}
-        <span>Lodging in ${city().name}</span><span>${city().upkeep}/day</span>
+        <span>Lodging in ${city().name}</span><span>${lodging()}/day</span>
         <span>Guild dues</span><span>${Game.dues()} every 7th day (next: day ${Math.ceil((state.day + 1) / 7) * 7})</span>
       </div>`);
     if (state.debt) UI.addChoices(money, [{ label: "Pay down debt", hint: `Pay up to ${Math.min(state.coin, state.debt)}`, disabled: state.coin < 1, reason: "No coin", action: () => Game.payDebt() }]);
@@ -1008,6 +1240,7 @@ const UI = {
         <span>Cities visited</span><span>${Object.keys(state.visited || {}).length} of ${CITIES.length}</span>
         <span>Clients served</span><span>${s.bodyCount}</span>
         <span>Satisfied / unsatisfied</span><span>${s.successes} / ${s.failures}</span>
+        <span>Group encounters</span><span>${s.groups || 0}</span>
         <span>Courtships won</span><span>${s.courtWins} of ${s.courtships}</span>
         <span>Quests completed</span><span>${s.questsDone}</span>
         <span>Demotions</span><span>${s.demotions}</span>
@@ -1032,6 +1265,44 @@ const UI = {
 /* =========================================================
    NARRATOR — reads lines from narration.js (window.NARRATION)
    ========================================================= */
+/* Body preferences: what a client or noble finds irresistible about a companion. */
+function rollBodyPref() {
+  const r = Math.random();
+  if (r < 0.2) return null;
+  if (r < 0.32) return { kind: "build", value: pick(Object.keys(BUILDS)) };
+  if (r < 0.42) return { kind: "hair", value: pick(HAIR) };
+  if (r < 0.48) return { kind: "looks", value: "striking" };
+  // a taste for one body part; your most extreme features draw the most attention
+  const g = state.character.gender, body = { ...BODY_DEFAULT, ...(state.character.body || {}) };
+  const parts = bodyParts(g);
+  const w = parts.map(k => { const o = BODY[k].opts, i = o.indexOf(body[k]); return BODY[k].flat ? 1 : (i === 0 || i === o.length - 1) ? 2.5 : 1; });
+  let x = Math.random() * w.reduce((a, b) => a + b, 0), part = parts[0];
+  for (let i = 0; i < parts.length; i++) { x -= w[i]; if (x <= 0) { part = parts[i]; break; } }
+  if (BODY[part].flat) return { kind: "part", part, dir: pick(BODY[part].opts) };
+  return { kind: "part", part, dir: Math.random() < 0.6 ? "big" : "small" };
+}
+function bodyPrefText(bp, cg) {
+  if (!bp) return "";
+  if (bp.kind === "part") return BODY_TASTE[bp.part][bp.dir];
+  if (bp.kind === "build") return `has a weakness for ${buildWord(bp.value).toLowerCase()} figures`;
+  if (bp.kind === "hair") return `is partial to ${bp.value.toLowerCase()} hair`;
+  return "only wants the most striking companions";
+}
+function bodyMatch(bp) {
+  if (!bp) return 0;
+  const c = state.character;
+  if (bp.kind === "part") {
+    const B = BODY[bp.part];
+    if (B.g && B.g !== c.gender) return 0;
+    const v = (c.body || BODY_DEFAULT)[bp.part] || BODY_DEFAULT[bp.part], i = B.opts.indexOf(v), n = B.opts.length;
+    if (B.flat) return v === bp.dir ? 1 : 0;
+    if (bp.dir === "big") return i >= n - 2 ? 1 : i === 0 ? -1 : 0;
+    return i <= 1 ? 1 : i === n - 1 ? -1 : 0;
+  }
+  const yes = bp.kind === "build" ? c.build === bp.value : bp.kind === "hair" ? c.hair === bp.value : c.appearance === "striking";
+  return yes ? 1 : bp.kind === "looks" ? -1 : 0;
+}
+function garments(cg) { return cg === "male" ? { garment: "shirt", lower: "breeches", lace: "doublet laces" } : { garment: "gown", lower: "skirts", lace: "bodice laces" }; }
 const NPC_GENDER = { marlow: "male", edric: "male", briar: "female" };
 const CLIENT_PRONOUNS = {
   male: { they: "he", them: "him", their: "his", themself: "himself", s: "s", es: "es", are: "is" },
@@ -1074,7 +1345,7 @@ const Narrator = {
     if (!line) return "";
     const pr = CLIENT_PRONOUNS[e.cg] || CLIENT_PRONOUNS.male;
     const client = e.npc ? e.npc.name : e.patron ? "the patron" : "your client";
-    const map = { name: esc(state.character.name || ""), client, move: (e.curMove || e.item).name, ...pr };
+    const map = { name: esc(state.character.name || ""), client, move: (e.curMove || e.item).name, other: e.otherName || "your other guest", ...garments(e.cg), ...pr };
     return line.replace(/\{(\w+)\}/g, (m, k) => {
       const lower = k.charAt(0).toLowerCase() + k.slice(1);
       const v = map[k] !== undefined ? map[k] : map[lower];
@@ -1097,11 +1368,20 @@ const Narrator = {
   },
   open(e) {
     const N = this.data();
-    const parts = [this.line("open:" + e.ctx, (N.open || {})[e.ctx], e)];
+    const parts = [e.party && N.group ? this.line("gopen", N.group.open, e) : this.line("open:" + e.ctx, (N.open || {})[e.ctx], e)];
     if (e.revealed) parts.push(this.line("temp:" + e.typeKey, (N.temperament || {})[e.typeKey], e));
     const t = (N.techniques || {})[e.item.id];
     if (t) parts.push(this.line("start:" + e.item.id, t.start, e));
+    if (!e.party) parts.push(this.bodyLine(e, e.prefs && e.prefs.body));
     return parts.filter(Boolean).join(" ");
+  },
+  bodyLine(e, bp) {
+    const N = this.data(), B = N.body || {};
+    const m = bodyMatch(bp);
+    if (!bp || !m) return "";
+    const key = bp.kind === "part" ? bp.part : "general";
+    const set = (B[m > 0 ? "like" : "dislike"] || {});
+    return this.line(`body:${key}:${m}`, set[key] || set.general, e);
   },
   turn(e, o) {
     const N = this.data();
@@ -1114,23 +1394,34 @@ const Narrator = {
     const ap = (N.approaches || {})[o.kind] || {};
     const own = () => this.line(`${o.pos.id}:${res}`, tech[res], e) || this.line(`sk:${o.pos.skill}:${res}`, sk[res], e) || this.line(`def:${res}`, def[res], e);
     let main = null;
-    if ((o.kind === "work" || o.kind === "focus") && o.repeat) main = this.line(`rep:${o.pos.id}`, tech.repeat || sk.repeat || def.repeat, e);
+    if (o.kind === "undress" || o.kind === "rush" || o.kind === "strip") main = this.line(`ud:${o.kind}:${res}`, (((N.undress || {})[o.kind === "undress" ? "slow" : o.kind === "rush" ? "rush" : "self"]) || {})[res], e) || own();
+    else if (o.kind === "together") main = this.line(`gt:${res}`, ((N.group || {}).together || {})[res], e) || own();
+    else if ((o.kind === "work" || o.kind === "focus") && o.repeat) main = this.line(`rep:${o.pos.id}`, tech.repeat || sk.repeat || def.repeat, e);
     else if (o.kind === "focus") main = (o.success ? this.line(`focus:${o.pos.id}`, tech.focus, e) : null) || this.line(`ap:focus:${res}`, ap[res], e) || own();
     else if (o.kind !== "work") main = this.line(`ap:${o.kind}:${res}`, ap[res], e) || own();
     else main = own();
     const isTech = o.kind === "work" || o.kind === "focus";
+    if (isTech && !o.repeat && o.success && !o.disliked && tech.high && this.band(e) === "high") main = this.line(`high:${o.pos.id}`, tech.high, e) || main;
     if (isTech && !o.repeat && o.success && o.disliked) main = this.line("disliked", N.disliked, e) || main;
     if (main) parts.push(main);
     if (isTech && !o.repeat && o.success && o.liked) parts.push(this.line("liked", N.liked, e));
+    if (e.party && N.group && o.success && o.kind !== "together" && o.kind !== "recover") parts.push(this.line("gspill", N.group.spill, e));
+    if (o.kind === "strip" && o.success && !e.party) parts.push(this.bodyLine(e, e.prefs && e.prefs.body));
+    if (isTech && !o.repeat && N.mastery) {
+      const tier = masteryTier(o.pos.id), raw = state.skills[o.pos.skill] || 0;
+      if (o.success && tier >= 2 && Math.random() < 0.4) parts.push(this.line("sk:master", N.mastery.master, e));
+      else if (!o.success && tier === 0 && raw < 20 && Math.random() < 0.5) parts.push(this.line("sk:novice", N.mastery.novice, e));
+    }
     const band = this.band(e);
     const rb = (N.reactions || {})[band];
     parts.push(this.line(`react:${band}:${res}`, Array.isArray(rb) ? rb : (rb || {})[res], e));
     return parts.filter(Boolean).join(" ");
   },
-  finish(e, success) {
+  finish(e, success, partial) {
     const N = this.data();
-    const k = success ? "success" : "fail";
-    return this.line("fin:" + k, (N.finish || {})[k], e);
+    const k = success ? "success" : partial ? "partial" : "fail";
+    if (e.party && N.group && N.group.finish) return this.line("gfin:" + k, N.group.finish[k], e);
+    return this.line("fin:" + k, (N.finish || {})[k === "partial" ? "fail" : k], e);
   }
 };
 
@@ -1140,6 +1431,75 @@ const Narrator = {
 function pname() { return esc(state.character.name || "love"); }
 function fillText(s) { return String(s || "").replace(/\{name\}/g, pname()); }
 function courtTarget(c) { return { cg: c.cg, npc: { name: c.name }, item: INDEX.positions[0] }; }
+
+/* ---------- Contract board ---------- */
+const CONTRACT_WHO = ["a ship's captain on shore leave", "a visiting envoy", "a guild banker", "a retired duelist", "a cathedral organist", "a spice merchant", "a newly widowed vintner", "a master glassblower", "a traveling magistrate", "a mercenary captain", "a lady-in-waiting's steward", "a wool baron's heir", "a court physician", "a famous playwright", "a horse breeder in town for the fair", "a minor lord between wars"];
+const CONTRACT_ASK = {
+  exhibitionism: "wants to be seen with you, somewhere you might be discovered",
+  voyeurism: "wishes to watch a private performance, and perhaps more",
+  roleplay: "has a very particular story in mind and needs a partner to play it",
+  bondage: "wants an evening in silk cords, and someone who knows the knots",
+  dominance_and_submission: "is used to giving orders and wants, for once, to take them",
+  praise_kink: "wants to hear, at length, how well they're doing",
+  dirty_talk: "wants a companion with a wicked tongue",
+  sensory_deprivation: "asks for a blindfold and a patient hand",
+  temperature_play: "requests candles, ice and an unhurried evening",
+  spanking: "has been very bad and would like to be told so",
+  impact_play: "wants someone with a firm hand and good judgment",
+  foot_fetish: "has a weakness they're too shy to name in person"
+};
+const CONTRACT_PARTY = ["a newly married couple wanting to celebrate", "two old friends settling a wager", "a merchant and her favorite clerk", "a pair of officers on their last night before deployment", "three cousins in town for a wedding", "a troupe of actors after a triumph"];
+const maxContracts = () => 2 + (state.rank >= 3 ? 1 : 0);
+const daysLeft = k => { const d = k.deadline - state.day; return d <= 0 ? "due today" : `${d + 1} days left`; };
+function contractPool() {
+  const lim = state.character.limits || [];
+  const played = state.stats.played || {};
+  const items = [...INDEX.kinks, ...INDEX.positions.filter(p => knows(p.id) || canLearn(p.id))].filter(x => !lim.includes(x.id) && (state.level >= 3 || x.risk <= 3));
+  // favor what you've rarely done, so every technique turns up
+  const w = items.map(x => 1 / (1 + (played[x.id] || 0)));
+  let r = Math.random() * w.reduce((a, b) => a + b, 0);
+  for (let i = 0; i < items.length; i++) { r -= w[i]; if (r <= 0) return items[i]; }
+  return items[0];
+}
+function makeContract() {
+  const c = city(), t = c.tier;
+  const seq = ++state.contracts.seq;
+  const kinds = ["request", "request", "tally"];
+  if (state.rank >= 1) kinds.push("party");
+  const venues = Object.keys(VENUES).filter(k => c.venues.includes(k) && state.rank >= VENUES[k].rank);
+  if (venues.length) kinds.push("court");
+  const kind = pick(kinds);
+  const base = { id: seq, kind, city: state.city, tier: t, posted: state.day };
+  if (kind === "request") {
+    const item = contractPool(), cg = clientGender();
+    const name = `${pick(NAMES[cg])} ${pick(SURNAMES)}`;
+    const who = pick(CONTRACT_WHO);
+    const ask = CONTRACT_ASK[item.id] || `asks for a companion skilled in ${item.name}`;
+    return { ...base, item: item.id, cg, name, days: 3, deadline: 0,
+      title: `${name}: ${item.name}`, short: `${cap(who)} ${ask.replace(/they're|they/g, m => m === "they" ? (cg === "male" ? "he" : "she") : cg === "male" ? "he's" : "she's")}.`,
+      payMult: 1.5 + 0.15 * t, dcMod: 1 + Math.floor(t / 2), standing: 2 + t, bonus: 10 + 8 * t };
+  }
+  if (kind === "party") {
+    const item = contractPool(), size = state.rank >= 3 && Math.random() < 0.4 ? 3 : 2;
+    let who = pick(CONTRACT_PARTY);
+    if (size === 3 && !/three|troupe/.test(who)) who = "three revelers who won the night at cards";
+    if (size === 2 && /three|troupe/.test(who)) who = "a pair of lovers looking for a third";
+    return { ...base, item: item.id, size, days: 3, deadline: 0,
+      title: `${size === 2 ? "A pair" : "A party of three"}: ${item.name}`, short: `${cap(who)}, asking for ${item.name}.`,
+      payMult: 1.4 + 0.15 * t, dcMod: 1 + Math.floor(t / 2), standing: 3 + t, bonus: 15 + 10 * t };
+  }
+  if (kind === "court") {
+    const venue = pick(venues), v = VENUES[venue], cg = clientGender();
+    const name = `${pick(v.titles[cg])} ${pick(SURNAMES)}`;
+    return { ...base, venue, cg, name, days: 2, deadline: 0,
+      title: `Charm ${name}`, short: `A friend of ${name} pays the guild to have someone win them over at the ${venue === "tavern" ? "taproom" : venue}.`,
+      dcMod: 1, standing: 2 + v.scale + Math.floor(t / 2), bonus: 15 + 10 * t + 15 * v.scale };
+  }
+  const item = contractPool(), need = 2 + (Math.random() < 0.4 ? 1 : 0);
+  return { ...base, kind: "tally", item: item.id, need, have: 0, days: need + 2, deadline: 0,
+    title: `Guild order: ${item.name}`, short: `The guildhouse is short of hands who can do ${item.name}. Satisfy ${need} clients with it, in any city.`,
+    standing: 2 + t + need, bonus: 20 + 12 * t + 8 * need };
+}
 
 const Game = {
   mode: "creation",
@@ -1175,6 +1535,7 @@ const Game = {
     if (this.checkForcedEnding()) return;
     if (state.notices.length) { const n = state.notices.shift(); this.outcome(n.title, n.text, null, { kicker: n.kicker }); return; }
     if (state.pendingLevelUps > 0) { state.pendingLevelUps--; this.offerLevelUp(); return; }
+    if (state.pendingFeats > 0) { this.offerFeat(); return; }
     if (state.stress >= 100) { this.breakdown(); return; }
     if (this.checkStory()) return;
 
@@ -1206,6 +1567,12 @@ const Game = {
       ch.push({ label: `★ ${q.title}`, hint: step.desc, disabled: tried || tired, reason: tried ? "Try again tomorrow" : "Too tired or hurt — rest first", action: () => this.questStep(q) });
     });
 
+    this.contractsHere().forEach(k => {
+      const tired = state.energy < 15 || state.health < MIN_HEALTH_TO_WORK;
+      const busy = k.kind === "court" ? state.flags.courtedThisPhase : !!why;
+      ch.push({ label: `✦ ${k.title}`, hint: `${k.short} · ${daysLeft(k)}`, disabled: tired || busy, reason: tired ? "Too tired or hurt — rest first" : k.kind === "court" ? "You've already courted this phase" : why, action: () => this.fulfilContract(k) });
+    });
+
     const left = clientCap() - state.flags.clientsThisPhase;
     ch.push({ section: "Work" });
     ch.push({ label: "Look for a client", hint: `${left} more this ${state.phase} · base pay ~${grossPay(INDEX.positions[0], false)}`, disabled: !!why, reason: why, action: () => this.startEncounter() });
@@ -1215,21 +1582,41 @@ const Game = {
       const locked = state.rank < v.rank;
       const busy = state.flags.courtedThisPhase;
       const tired = state.energy < 10;
-      ch.push({ label: v.name, hint: `Courtship · ${k === "tavern" ? "win a well-off patron" : k === "salon" ? "merchants, magistrates and minor nobility" : "the high nobility"}`,
+      ch.push({ label: v.name, hint: `${societyFatigue() ? `Society is tiring of you (+${2 * societyFatigue()} difficulty) · ` : ""}Courtship · ${k === "tavern" ? "win a well-off patron" : k === "salon" ? "merchants, magistrates and minor nobility" : "the high nobility"}`,
         disabled: locked || busy || tired, reason: locked ? `Requires ${rankName(v.rank)}` : busy ? `Once per phase` : "Too tired. Rest first.", action: () => this.startCourt({ venue: k }) });
     });
+    this.refreshBoard();
+    const posted = state.contracts.board.length, act = state.contracts.active.length;
+    ch.push({ label: "Read the contract board", hint: `${posted ? `${posted} posting${posted === 1 ? "" : "s"}` : "Nothing posted"} · ${act}/${maxContracts()} contracts taken`, action: () => this.board() });
     const avail = this.questsHere().length;
     ch.push({ label: "Ask around the guildhouse", hint: avail ? `${avail} ${avail === 1 ? "person needs" : "people need"} a favor` : "No new work here right now", disabled: !avail, reason: "No new work here right now", action: () => this.askAround() });
 
+    ch.push({ label: "Train at the guildhouse", hint: `Pay a tutor to raise a skill or master a technique · once per ${state.phase}`, disabled: state.flags.trainedThisPhase || state.energy < 15, reason: state.flags.trainedThisPhase ? `Already trained this ${state.phase}` : "Too tired to train", action: () => this.train() });
     ch.push({ section: "Rest" });
     ch.push({ label: "Rest", hint: state.flags.clientsThisPhase ? "A fair recovery after work" : "Light rest — you haven't worked", disabled: state.flags.restedThisPhase, reason: "Already rested this phase", action: () => this.rest() });
     if (state.debt) ch.push({ label: "Pay down debt", hint: `Owed ${state.debt} · 5% interest daily`, disabled: state.coin < 1, reason: "No coin", action: () => this.payDebt() });
     const duesDay = state.phase === "night" && (state.day + 1) % 7 === 0;
-    ch.push({ label: PHASE_END[state.phase], hint: state.phase === "night" ? `Lodging ${c.upkeep}${duesDay ? ` + guild dues ${this.dues()}` : ""} due at dawn` : "", quiet: true, action: () => this.endPhase() });
+    ch.push({ label: PHASE_END[state.phase], hint: state.phase === "night" ? `Lodging ${lodging()}${duesDay ? ` + guild dues ${this.dues()}` : ""} due at dawn` : "", quiet: true, action: () => this.endPhase() });
     UI.choices(ch);
   },
 
   refresh() { if (UI.tab === "work") this.menu(); else UI.renderView(); },
+
+  offerFeat() {
+    this.setMode("event");
+    const avail = Object.keys(FEATS).filter(k => !(state.feats || []).includes(k));
+    UI.scene({ kicker: "A new feat", title: "Choose a feat", body: "Experience has sharpened you. Choose one feat; some require high enough attributes or skills." });
+    UI.choices(avail.map(k => {
+      const f = FEATS[k], met = featReqMet(state, f), req = featReqText(f);
+      return { label: f.name, hint: f.desc + (req ? ` · requires ${req}` : ""), disabled: !met, reason: `${f.desc} · requires ${req}`, action: () => {
+        state.feats = [...(state.feats || []), k];
+        state.classFeatures[k] = true;
+        state.pendingFeats = Math.max(0, (state.pendingFeats || 0) - 1);
+        this.log(`Learned the feat ${f.name}.`);
+        this.menu();
+      } };
+    }).concat(avail.some(k => featReqMet(state, FEATS[k])) ? [] : [{ label: "Nothing fits yet", hint: "Raise your attributes or skills; this feat choice is saved for later", quiet: true, action: () => { state.pendingFeats = 0; state.savedFeats = (state.savedFeats || 0) + 1; this.menu(); } }]));
+  },
 
   offerLevelUp() {
     this.setMode("event");
@@ -1258,73 +1645,130 @@ const Game = {
     }
     this.setMode("encounter");
     const c = city();
-    const all = [...INDEX.positions, ...INDEX.kinks].map(x => x.id).sort(() => Math.random() - 0.5);
-    const likes = [Math.random() < 0.6 ? pick(c.tastes) : all[0]];
-    likes.push(all.find(id => !likes.includes(id)));
-    const prefs = { likes, dislikes: all.filter(id => !likes.includes(id)).slice(0, 2) };
+    const limits = state.character.limits || [];
+    const specs = (state.character.specialties || []).map(anyItem).filter(Boolean);
+    const groupOdds = 0.07 + 0.03 * c.tier + (state.classFeatures.crowdPleaser || state.classFeatures.ringmaster ? 0.05 : 0);
+    const group = spec ? !!spec.group : Math.random() < groupOdds;
+    const n = group ? (spec && spec.group ? spec.group : Math.random() < 0.75 ? 2 : 3) : 1;
+    const makePrefs = () => {
+      const all = [...INDEX.positions, ...INDEX.kinks].map(x => x.id).sort(() => Math.random() - 0.5);
+      const likes = [Math.random() < 0.6 ? pick(c.tastes) : all[0]];
+      likes.push(all.find(id => !likes.includes(id)));
+      return { likes, dislikes: all.filter(id => !likes.includes(id)).slice(0, 2) };
+    };
+    const prefs = makePrefs();
+    prefs.body = rollBodyPref();
 
     let item;
     if (spec && spec.item) item = anyItem(spec.item);
     else {
       const useKink = Math.random() > 0.5;
-      let pool = useKink ? INDEX.kinks : INDEX.positions.filter(p => state.knownPositions.includes(p.id));
+      let pool = useKink ? INDEX.kinks : INDEX.positions.filter(p => knows(p.id));
       if (state.level < 3) pool = pool.filter(x => x.risk <= 2);
       if (!pool.length) pool = [INDEX.positions[0]];
       item = pick(pool);
-      const liked = pool.find(x => prefs.likes.includes(x.id));
-      if (liked && Math.random() < 0.55) item = liked;
+      const liked = pool.find(x => prefs.likes.includes(x.id) && !limits.includes(x.id));
+      if (liked && Math.random() < 0.5) item = liked;
+      if (useKink && specs.length && Math.random() < 0.35) item = pick(specs);
+      if (!useKink && Math.random() < 0.15) {
+        const fresh = INDEX.positions.filter(p => !knows(p.id) && canLearn(p.id));
+        if (fresh.length) item = pick(fresh);
+      }
+      if (limits.includes(item.id) && Math.random() < 0.5) {
+        const alt = pool.filter(x => !limits.includes(x.id));
+        if (alt.length) item = pick(alt);
+      }
     }
     prefs.dislikes = prefs.dislikes.filter(id => id !== item.id);
 
     const fameIdx = getFameIndex();
-    const patron = spec ? !!spec.patron : fameIdx >= 2 && Math.random() < 0.1 + 0.03 * (fameIdx - 2);
+    const patron = spec ? !!spec.patron : !group && fameIdx >= 2 && Math.random() < 0.1 + 0.03 * (fameIdx - 2);
     let type = spec && spec.typeKey ? CLIENT_TYPES[spec.typeKey] : rollClientType();
     if (patron && !(spec && spec.typeKey)) type = Math.random() < 0.5 ? CLIENT_TYPES.generous : CLIENT_TYPES.demanding;
     let npc = null;
     if (spec && spec.name) npc = { id: null, name: spec.name, blurb: spec.blurb || "" };
-    else if (!spec && !patron && c.npcs.length && Math.random() < 0.3) npc = NPCS.find(x => x.id === pick(c.npcs));
+    else if (!spec && !group && !patron && c.npcs.length) {
+      const want = pick(c.npcs);
+      const cand = NPCS.find(x => x.id === want);
+      if (cand) {
+      const fit = CLIENTELE[state.character.clientele || "anyone"].male;
+      const w = NPC_GENDER[cand.id] === "male" ? fit : 1 - fit;
+      if (Math.random() < 0.3 * Math.min(1, w * 2)) npc = cand;
+    } }
+    let party = null;
+    if (group) {
+      party = [];
+      for (let i = 0; i < n; i++) {
+        const cg = clientGender();
+        let nm = pick(NAMES[cg]);
+        while (party.some(m => m.name === nm)) nm = pick(NAMES[cg]);
+        const mp = makePrefs(); mp.body = rollBodyPref();
+        party.push({ name: nm, cg, prefs: mp });
+      }
+      party.forEach(m => { m.prefs.dislikes = m.prefs.dislikes.filter(id => id !== item.id); });
+    }
 
     let dc = 8 + item.risk * 2 + c.tier + Math.floor(Math.random() * 3) + ((spec && spec.dcMod) || 0);
-    if (prefs.likes.includes(item.id)) dc -= 1;
-    if (prefs.dislikes.includes(item.id)) dc += 2;
+    if (group) dc += 1 + (state.classFeatures.shyCrowds ? 2 : 0);
+    if (!group && prefs.likes.includes(item.id)) dc -= 1;
+    if (!group && prefs.dislikes.includes(item.id)) dc += 2;
+    const bm = group ? 0 : bodyMatch(prefs.body);
+    dc -= bm;
+
+    let gross = Math.round(grossPay(item, patron) * (spec && spec.payMult !== undefined ? spec.payMult : 1));
+    if (group) gross = Math.round(gross * 0.85 * n);
+    if (specs.some(x => x.id === item.id)) gross = Math.round(gross * 1.15);
+    if (bm > 0) gross = Math.round(gross * 1.1);
+    if (bm < 0) gross = Math.round(gross * 0.9);
+    if (state.classFeatures.ropeMaster && (item.id === "bondage" || item.id === "dominance_and_submission")) gross = Math.round(gross * 1.2);
 
     this.offer = {
-      item, prefs, type, patron, npc, spec: spec || null, tier: c.tier,
+      item, prefs, type, patron, npc, party, spec: spec || null, tier: c.tier,
       stranger: pick(c.strangers),
-      cg: spec && spec.cg ? spec.cg : npc && npc.id ? NPC_GENDER[npc.id] : (Math.random() < 0.7 ? "male" : "female"),
-      baseDC: dc,
-      gross: Math.round(grossPay(item, patron) * (spec && spec.payMult !== undefined ? spec.payMult : 1)),
-      stress: c.tier <= 1 ? 5 : 3,
+      cg: spec && spec.cg ? spec.cg : npc && npc.id ? NPC_GENDER[npc.id] : clientGender(),
+      baseDC: dc, gross,
+      stress: (c.tier <= 1 ? 5 : 3) + (group ? 2 * (n - 1) : 0),
       revealed: false, readTried: false
     };
-    this.log(`${npc ? npc.name : patron ? "A wealthy patron" : cap(this.offer.stranger)} asked for ${item.name}.`);
+    this.log(`${this.whoOf(this.offer)} asked for ${item.name}.`);
     this.showOffer();
   },
 
-  whoOf(o) { return o.npc ? o.npc.name : o.patron ? "A wealthy patron" : cap(o.stranger); },
+  whoOf(o) {
+    if (o.party) return o.party.length === 2 ? `${o.party[0].name} and ${o.party[1].name}` : `${o.party[0].name}, ${o.party[1].name} and ${o.party[2].name}`;
+    return o.npc ? o.npc.name : o.patron ? "A wealthy patron" : cap(o.stranger);
+  },
 
   showOffer() {
     const o = this.offer;
     const realDC = o.baseDC + o.type.dc;
     const shownDC = o.revealed ? realDC : o.baseDC;
-    const liked = o.prefs.likes.includes(o.item.id);
+    const isLimit = (state.character.limits || []).includes(o.item.id);
+    const isSpec = (state.character.specialties || []).includes(o.item.id);
     const lines = [];
+    if (o.party) lines.push(`<em>${o.party.length === 2 ? "A pair" : "A party of three"} who want to share you between them${o.party.length === 2 ? "" : ", or each other"}.</em>`);
     if (o.npc && o.npc.blurb) lines.push(`<em>${cap(o.npc.blurb)}.</em>`);
     if (o.patron && !(o.spec && o.spec.name)) lines.push(`<em>Fine wool, a heavy ring, a servant waiting outside. Your name has reached the right ears.</em>`);
     if (o.spec && o.spec.trial) lines.push(`<em>The guild's examiners will judge every moment. There is no pay for a trial.</em>`);
-    lines.push(`They want <b>${o.item.name}</b>.${liked ? " It's something they love." : ""}`);
+    lines.push(`They want <b>${o.item.name}</b>.${!o.party && o.prefs.likes.includes(o.item.id) ? " It's something they love." : ""}${isSpec ? " <b>It's one of your specialties.</b>" : ""}${isLimit ? " <b>It's one of your limits.</b>" : ""}${!knows(o.item.id) && isPosition(o.item.id) ? " <em>You've never done it before; succeed and you'll learn it.</em>" : ""}`);
+    const bodyNotes = (o.party ? o.party.map(m => m.prefs.body ? `${m.name} ${bodyPrefText(m.prefs.body)}${bodyMatch(m.prefs.body) > 0 ? ", and you fit the bill" : bodyMatch(m.prefs.body) < 0 ? ", and you don't" : ""}.` : "") : [o.prefs.body ? `${o.cg === "male" ? "He" : "She"} ${bodyPrefText(o.prefs.body)}${bodyMatch(o.prefs.body) > 0 ? ", and you're exactly that." : bodyMatch(o.prefs.body) < 0 ? ". You'll have to work harder." : "."}` : ""]).filter(Boolean);
+    if (bodyNotes.length) lines.push(bodyNotes.join(" "));
     lines.push(o.revealed ? `\nYou read them: <b>${o.type.name}</b>. ${o.type.desc}` : o.readTried ? "\nYou couldn't get a read on them." : "\nYou haven't sized them up yet.");
     const chips = [];
-    o.prefs.likes.forEach(id => chips.push({ text: "♥ " + nameOf(id), cls: "like" }));
-    o.prefs.dislikes.forEach(id => chips.push({ text: "✕ " + nameOf(id), cls: "dislike" }));
+    if (o.party) o.party.forEach(m => chips.push({ text: `${m.name}: ♥ ${nameOf(m.prefs.likes[0])}`, cls: "like" }));
+    else {
+      o.prefs.likes.forEach(id => chips.push({ text: "♥ " + nameOf(id), cls: "like" }));
+      o.prefs.dislikes.forEach(id => chips.push({ text: "✕ " + nameOf(id), cls: "dislike" }));
+    }
     if (o.revealed) chips.push({ text: o.type.name, cls: o.type.key === "dangerous" ? "warn" : o.type.key === "generous" ? "gold" : "calm" });
-    UI.scene({ kicker: o.spec && o.spec.trial ? "Rank trial" : "A client approaches", title: this.whoOf(o), body: lines.join("\n"), chips, roll: this.lastRoll });
+    UI.scene({ kicker: o.spec && o.spec.trial ? "Rank trial" : o.party ? "A group approaches" : "A client approaches", title: this.whoOf(o), body: lines.join("\n"), chips, roll: this.lastRoll,
+      html: actPanel({ item: o.item, curMove: o.item, party: o.party, climax: 1, climaxMax: 1 }, true) });
 
-    const meta = skillMeta(o.item.skill);
+    const meta = skillMeta(o.item.skill, { bonus: techBonus(o.item.id) });
     const ch = [];
     if (!o.readTried) {
       const rdc = (o.type.key === "dangerous" ? 13 : 11) + Math.floor(o.tier / 2);
-      const im = skillMeta("insight", { bonus: state.classFeatures.keenEye ? 2 : 0 });
+      const im = skillMeta("insight", { bonus: readBonus() });
       ch.push({ label: "Size them up", hint: "Insight · reveals what kind of client this is", odds: odds(im, rdc), action: () => {
         o.readTried = true;
         if (check(im, rdc).success) o.revealed = true;
@@ -1353,8 +1797,8 @@ const Game = {
       if (state.classFeatures.command && isKink(o.item.id)) {
         ch.push({ label: "Command the scene", hint: `~${o.gross + 6} coin · more stress`, odds: odds(meta, realDC + 1), action: () => this.beginEncounter({ dc: realDC + 1, gross: o.gross + 6, stress: o.stress + 2 }) });
       }
-      const free = state.control >= 60;
-      ch.push({ label: "Turn them away", hint: free ? "On your own terms · no penalty (Control 60+)" : "−1 standing · −1 reputation · −2 control", quiet: true, action: () => {
+      const free = state.control >= 60 || isLimit;
+      ch.push({ label: isLimit ? "Refuse: it's one of your limits" : "Turn them away", hint: free ? (isLimit ? "No penalty" : "On your own terms · no penalty (Control 60+)") : "−1 standing · −1 reputation · −2 control", quiet: !isLimit, primary: isLimit, action: () => {
         if (!free) { changeStanding(-1); state.reputation = Math.max(0, state.reputation - 1); state.control = Math.max(0, state.control - 2); }
         if (o.npc && o.npc.id) adjustRel(o.npc.id, { trust: -2 });
         this.log(`Turned away ${this.whoOf(o)}.`);
@@ -1369,22 +1813,36 @@ const Game = {
   beginEncounter(t) {
     const o = this.offer;
     this.lastRoll = this.lastRoll && t.note ? this.lastRoll : null;
-    const liked = o.prefs.likes.includes(o.item.id), disliked = o.prefs.dislikes.includes(o.item.id);
     let max = 12 + o.item.risk * 4 + o.tier + o.type.climax;
-    if (liked) max = Math.max(8, max - 4);
-    if (disliked) max += 5;
-    let adv = 0;
-    if (t.inspiration && state.inspiration) { state.inspiration = 0; adv = 1; }
+    if (!o.party) {
+      if (bodyMatch(o.prefs.body) > 0) max = Math.round(max * 0.85);
+      if (bodyMatch(o.prefs.body) < 0) max = Math.round(max * 1.15);
+      if (o.prefs.likes.includes(o.item.id)) max = Math.max(8, max - 4);
+      if (o.prefs.dislikes.includes(o.item.id)) max += 5;
+    }
+    let adv = state.classFeatures.showstopper ? 1 : 0;
+    if (t.inspiration && state.inspiration) { state.inspiration = 0; adv += 1; }
     state.stress = clamp(state.stress + t.stress, 0, 100);
+    const party = o.party ? o.party.map(m => {
+      let mx = Math.round(max * 0.75);
+      if (m.prefs.likes.includes(o.item.id)) mx -= 3;
+      if (m.prefs.dislikes.includes(o.item.id)) mx += 4;
+      if (bodyMatch(m.prefs.body) > 0) mx = Math.round(mx * 0.85);
+      if (bodyMatch(m.prefs.body) < 0) mx = Math.round(mx * 1.15);
+      return { ...m, max: mx, climax: mx, dress: 2 };
+    }) : null;
+    const rounds = 5 + (state.classFeatures.insatiable ? 1 : 0) + (party ? party.length - 1 + (state.classFeatures.ringmaster ? 1 : 0) : 0);
     state.encounter = {
       item: o.item, skill: o.item.skill, ctx: narrKey(o.tier), tier: o.tier, prefs: o.prefs, type: o.type, typeKey: o.type.key, revealed: o.revealed,
       patron: o.patron, npc: o.npc, cg: o.cg, who: this.whoOf(o), spec: o.spec, curMove: o.item, dc: t.dc, gross: t.gross,
-      climax: max, climaxMax: max, round: 1, maxRounds: 5,
+      climax: max, climaxMax: max, round: 1, maxRounds: rounds, party, focus: 0, unlocks: [],
+      dress: isKink(o.item.id) ? 1 : 2, selfDress: 2,
       advantageRounds: adv, lastMoveId: null, repeat: 0, combo: 0,
       text: t.note || "You lead them somewhere private."
     };
     this.offer = null;
     const en = state.encounter;
+    if (party) syncFocus(en);
     if (Narrator.on()) en.text = (t.note ? t.note + " " : "") + Narrator.open(en);
     this.encounterRound();
   },
@@ -1396,17 +1854,25 @@ const Game = {
     else if (kind === "focus") { Object.assign(p, { dcMod: 2, dmg: 4 + (pos.risk || 1), stress: 3, energy: 8 }); }
     else if (kind === "recover") { Object.assign(p, { skill: "insight", dcMod: -1, dmg: 1, stress: state.classFeatures.soothing ? -4 : -2, energy: 3, moveId: "recover" }); }
     else if (kind === "command") { Object.assign(p, { skill: "kink", dcMod: 1, dmg: 4 + (pos.risk || 1), stress: 2, moveId: "command" }); }
+    else if (kind === "together") { Object.assign(p, { skill: "performance", dcMod: 0, dmg: 3 + (pos.risk || 1), stress: 3, energy: 8, moveId: "together" }); }
+    else if (kind === "undress") { Object.assign(p, { skill: "performance", dcMod: -1, dmg: 2, stress: 1, energy: 4, moveId: "undress" }); }
+    else if (kind === "rush") { Object.assign(p, { skill: "manual", dcMod: -2, dmg: 1, stress: 1, energy: 3, moveId: "rush" }); }
+    else if (kind === "strip") { Object.assign(p, { skill: "performance", dcMod: 0, dmg: 3, stress: 1, energy: 4, moveId: "strip" }); }
     else {
       const preferred = [...(CLASS_POSITIONS[state.character.class] || []), ...(SUBCLASS_POSITIONS[state.character.subclass] || [])];
       if (preferred.includes(pos.id)) p.dmg += 1;
     }
     if (state.classFeatures.frail) p.energy += 2;
+    if (state.classFeatures.tireless) p.energy = Math.max(2, p.energy - 1);
     if (state.classFeatures.ironHips && p.skill === "vaginal") p.energy = Math.max(2, p.energy - 2);
     if (state.classFeatures.slender && (p.skill === "oral" || p.skill === "manual")) p.energy = Math.max(2, p.energy - 1);
+    if ((kind === "work" || kind === "focus") && isPosition(pos.id) && e.dress) p.dmg = Math.max(1, p.dmg - e.dress);
     p.repeat = kind !== "recover" && p.moveId === e.lastMoveId ? e.repeat + 1 : 0;
     if (p.repeat) p.dmg = Math.max(1, p.dmg - 2 * p.repeat);
     p.dc = Math.max(6, e.dc + p.dcMod);
-    p.meta = skillMeta(p.skill, { advantage: e.advantageRounds > 0 });
+    let bonus = (kind === "work" || kind === "focus") ? techBonus(pos.id) : 0;
+    if (state.classFeatures.freckles && e.typeKey === "nervous") bonus += 1;
+    p.meta = skillMeta(p.skill, { advantage: e.advantageRounds > 0, bonus });
     p.odds = odds(p.meta, p.dc);
     return p;
   },
@@ -1414,7 +1880,10 @@ const Game = {
   encounterRound() {
     const e = state.encounter;
     if (!e) { this.menu(); return; }
-    if (e.climax <= 0) { this.finishEncounter(true); return; }
+    if (e.party) {
+      if (e.party.every(m => m.climax <= 0)) { this.finishEncounter(true); return; }
+      if (e.party[e.focus].climax <= 0) { e.focus = e.party.findIndex(m => m.climax > 0); syncFocus(e); }
+    } else if (e.climax <= 0) { this.finishEncounter(true); return; }
     if (e.round > e.maxRounds || state.energy < 6) { this.finishEncounter(false); return; }
 
     const pct = Math.round((1 - Math.max(0, e.climax) / e.climaxMax) * 100);
@@ -1422,40 +1891,60 @@ const Game = {
     const chips = [];
     if (e.combo > 1) chips.push({ text: `Rhythm ×${e.combo}`, cls: "gold" });
     if (e.lastMoveId && e.repeat) chips.push({ text: "Getting repetitive", cls: "warn" });
-    if (e.advantageRounds) chips.push({ text: "Inspired: advantage", cls: "gold" });
+    if (e.advantageRounds) chips.push({ text: "Advantage this round", cls: "gold" });
     e.prefs.likes.forEach(id => chips.push({ text: "♥ " + nameOf(id), cls: "like" }));
     UI.scene({
-      kicker: `${e.spec && e.spec.trial ? "Rank trial · " : ""}Round ${e.round} of ${e.maxRounds} · ${e.item.name}`,
-      title: e.who,
+      kicker: `${e.spec && e.spec.trial ? "Rank trial · " : ""}Round ${e.round} of ${e.maxRounds}`,
+      title: e.party ? `With ${e.npc.name}` : e.who,
       body: Narrator.on() ? e.text : `${e.text}\n<em>They are ${mood}.</em>`,
-      meter: { label: "Satisfaction", value: pct, pips: { max: e.maxRounds, used: e.round - 1 } },
+      html: actPanel(e),
+      meter: { label: e.party ? `${e.npc.name}'s satisfaction` : "Satisfaction", value: pct, pips: { max: e.maxRounds, used: e.round - 1 } },
       roll: this.lastRoll, chips
     });
 
+    const limits = state.character.limits || [];
     const opt = (kind, pos, label, extra) => {
       const p = this.planAction(kind, pos);
       const notes = [];
       if (extra) notes.push(extra);
       if (p.repeat) notes.push("repeating — weaker");
       if (kind === "work" || kind === "focus") {
-        if (e.prefs.likes.includes(pos.id)) notes.push("they love this");
-        else if (e.prefs.dislikes.includes(pos.id)) notes.push("they dislike this");
+        if (e.prefs.likes.includes(pos.id)) notes.push(e.party ? `${e.npc.name} loves this` : "they love this");
+        else if (e.prefs.dislikes.includes(pos.id)) notes.push(e.party ? `${e.npc.name} dislikes this` : "they dislike this");
+        const tier = masteryTier(pos.id);
+        if (tier) notes.push(MASTERY_NAMES[tier]);
       }
       notes.push(`${p.meta.label} · −${p.energy} energy`);
       return { label, hint: notes.join(" · "), odds: p.odds, disabled: state.energy < p.energy, reason: "Not enough energy", action: () => this.doRound(kind, pos) };
     };
+    const short = o => { o.hint = o.hint.replace(/ · −\d+ energy$/, ""); return o; };
 
     const list = [opt("work", e.item, `${e.item.name}`, "what they asked for")];
     list[0].primary = true;
-    const tech = state.knownPositions.filter(id => isPosition(id) && id !== e.item.id).map(id => {
-      const p = getPosition(id);
-      const o = opt("work", p, p.name);
-      o.hint = o.hint.replace(/ · −\d+ energy$/, "");
-      return o;
-    });
-    if (tech.length) list.push({ section: "Switch technique" }, { grid: tech });
+    if (e.party) {
+      const others = e.party.map((m, i) => ({ m, i })).filter(x => x.i !== e.focus && x.m.climax > 0);
+      if (others.length) list.push({ section: "Turn your attention to" }, { grid: others.map(({ m, i }) => ({
+        label: m.name, hint: `${Math.round((1 - m.climax / m.max) * 100)}% · loves ${nameOf(m.prefs.likes[0])}`,
+        action: () => { e.focus = i; syncFocus(e); this.encounterRound(); } })) });
+    }
+    const tech = state.knownPositions.filter(id => isPosition(id) && id !== e.item.id).map(id => short(opt("work", getPosition(id), getPosition(id).name)));
+    if (tech.length) list.push({ section: "Switch position" }, { grid: tech });
+    const kinks = knownKinks().filter(id => id !== e.item.id && !limits.includes(id)).map(id => short(opt("work", anyItem(id), anyItem(id).name)));
+    if (kinks.length) list.push({ section: "Switch to a kink" }, { grid: kinks });
     list.push({ section: "Approach" });
-    list.push(opt("focus", e.item, "Push harder", "big progress, harder"));
+    if (e.party) list.push(opt("together", e.item, "Bring them together", "everyone feels it"));
+    if (e.dress || e.selfDress) {
+      const g = garments(e.cg);
+      const their = e.cg === "male" ? "his" : "her";
+      const und = [];
+      if (e.dress) {
+        und.push(short(opt("undress", e.item, `Undress ${e.party ? e.npc.name : "them"} slowly`, "builds anticipation")));
+        und.push(short(opt("rush", e.item, `${e.cg === "male" ? "Tug open" : "Hitch up"} ${their} ${g.lower}`, "quick, bares them at once")));
+      }
+      if (e.selfDress) und.push(short(opt("strip", e.item, "Undress for them", "a show of your own")));
+      list.push({ section: e.dress ? `Clothes (${e.dress === 2 ? "still dressed" : "loosened"}: positions −${e.dress})` : "Clothes" }, { grid: und });
+    }
+    list.push(opt("focus", e.curMove || e.item, "Push harder", "big progress, harder"));
     list.push(opt("tease", e.item, "Tease and talk", "safe, slow"));
     list.push(opt("recover", e.item, "Pull back and breathe", "eases your stress"));
     if (state.classFeatures.command) list.push(opt("command", e.item, "Take command", "Dominatrix"));
@@ -1472,7 +1961,7 @@ const Game = {
     if (e.advantageRounds > 0) e.advantageRounds--;
     const r = check(p.meta, p.dc);
     let stress = p.stress;
-    let text = { tease: "You tease them with words and a slow touch.", focus: `You throw yourself into ${pos.name}.`, recover: "You slow down and steady yourself.", command: "You take control of the pace." }[kind] || `You move into ${pos.name}.`;
+    let text = { tease: "You tease them with words and a slow touch.", focus: `You throw yourself into ${pos.name}.`, recover: "You slow down and steady yourself.", command: "You take control of the pace.", together: "You draw them all together." }[kind] || `You move into ${pos.name}.`;
     const isTech = kind === "work" || kind === "focus";
     const liked = isTech && e.prefs.likes.includes(pos.id), disliked = isTech && e.prefs.dislikes.includes(pos.id);
     const switched = isTech && e.curMove && e.curMove.id !== pos.id;
@@ -1486,17 +1975,34 @@ const Game = {
       const combo = Math.max(0, e.combo - 1);
       dealt += combo;
       text += p.repeat ? " It's losing its effect." : combo ? " You've found a rhythm." : " It lands.";
-      e.climax -= dealt;
+      if (e.party) {
+        if (kind === "together") {
+          const share = state.classFeatures.ringmaster ? 0.9 : 0.7;
+          e.party.forEach(m => { if (m.climax > 0) m.climax -= Math.max(1, Math.round(dealt * share)); });
+        } else {
+          const spill = state.classFeatures.crowdPleaser ? 0.6 : 0.35;
+          e.party.forEach((m, i) => { if (m.climax <= 0) return; m.climax -= i === e.focus ? dealt : Math.floor(dealt * spill); });
+        }
+        syncFocus(e, true);
+      } else e.climax -= dealt;
       if (state.classFeatures.thickSkinned) stress = Math.max(stress < 0 ? stress : 0, stress - 1);
+      if (kind === "undress") e.dress = Math.max(0, e.dress - 1);
+      if (kind === "rush") e.dress = 0;
+      if (kind === "strip") e.selfDress = 0;
+      if (e.party) e.party[e.focus].dress = e.dress;
     } else {
-      e.climax -= 1;
+      if (e.party) { e.party[e.focus].climax -= 1; syncFocus(e, true); } else e.climax -= 1;
       e.combo = 0;
       stress += state.classFeatures.nervous ? 3 : 2;
       state.control = Math.max(0, state.control - 1);
       text += p.repeat ? " They've had enough of that." : " It doesn't land. You strain to recover.";
     }
     if (stress > 0) stress += Math.floor(state.trauma / 25);
+    if (stress > 0 && state.classFeatures.unflappable) stress -= 1;
     state.stress = clamp(state.stress + stress, 0, 100);
+    // Practice makes perfect: every round trains the skill used and builds mastery of the technique.
+    trainFromRound(p.skill, isTech ? pos.id : null, r.success);
+    e.unlocks.push(...checkUnlocks());
     e.repeat = p.repeat;
     e.lastMoveId = p.moveId;
     e.round++;
@@ -1510,12 +2016,18 @@ const Game = {
     state.encounter = null;
     if (!e) { this.menu(); return; }
     const risk = e.item.risk || 1;
-    const gross = e.gross ? (success ? (e.gross + 4 + risk * 2) * e.type.payMult : e.gross * 0.45) : 0;
+    let partial = 0;
+    if (e.party && !success) {
+      const done = e.party.filter(m => m.climax <= 0).length;
+      if (done) partial = done / e.party.length;
+    }
+    let gross = 0;
+    if (e.gross) gross = success ? (e.gross + 4 + risk * 2) * e.type.payMult : partial ? e.gross * partial * e.type.payMult : e.gross * 0.45;
     const tip = success && e.type.tip ? Math.floor(gross * e.type.tip) : 0;
     const coin = e.gross ? Math.max(2, Math.floor(gross + tip)) : 0;
-    const r = { success, coin, tip };
+    const r = { success, coin, tip, partial };
     if (!(e.spec && e.spec.noTrouble)) {
-      let chance = city().trouble + e.type.trouble + (state.phaseMods.trouble || 0);
+      let chance = city().trouble + e.type.trouble + (state.phaseMods.trouble || 0) + (e.party ? 0.02 : 0);
       if (getFameIndex() >= 3) chance += 0.03;
       if (state.classFeatures.streetSmart) chance -= 0.03;
       if (state.classFeatures.marked) chance += 0.04;
@@ -1529,9 +2041,9 @@ const Game = {
     state.stats.troubles++;
     const rough = Math.random() < (e.typeKey === "dangerous" ? 0.7 : 0.4);
     const dcShift = controlMod() + Math.floor(e.tier / 2);
-    const extra = { bonus: state.upgrades.bodyguard ? 2 : 0 };
+    const extra = { bonus: (state.upgrades.bodyguard ? 2 : 0) + (state.classFeatures.scar ? 2 : 0) };
     const house = e.tier >= 2;
-    const who = e.who;
+    const who = e.party ? "One of them" : e.who;
     this.log(rough ? `${who} turned rough.` : `${who} refused to pay.`);
     const after = (text, roll) => this.applyResult(e, r, text, roll);
 
@@ -1549,7 +2061,7 @@ const Game = {
       ]);
     } else {
       UI.scene({ kicker: "Trouble", title: "It turns rough", body: `${who}'s grip tightens and their mood sours. This is no longer a game to them.`, chips: [{ text: "Danger", cls: "warn" }] });
-      const hurt = text => { state.health = Math.max(0, state.health - 15); state.trauma = Math.min(100, state.trauma + (state.classFeatures.resilientMind ? 3 : 4)); state.stress = clamp(state.stress + 10, 0, 100); r.coin = Math.floor(r.coin / 2); return text; };
+      const hurt = text => { state.health = Math.max(0, state.health - hurtAmt(15)); state.trauma = Math.min(100, state.trauma + (state.classFeatures.resilientMind ? 3 : 4)); state.stress = clamp(state.stress + 10, 0, 100); r.coin = Math.floor(r.coin / 2); return text; };
       const sm = attrMeta("str", extra), sdc = 13 + dcShift;
       const pm = skillMeta("persuasion", extra), pdc = 14 + dcShift;
       UI.choices([
@@ -1563,8 +2075,8 @@ const Game = {
           if (c.success) { state.stress = clamp(state.stress + 3, 0, 100); after("Your voice stays level. The fire goes out of them.", c); }
           else after(hurt("Your words only make it worse."), c);
         } },
-        house ? { label: "Shout for the doorman", hint: "Safe · 25% fee", action: () => { state.health = Math.max(0, state.health - 3); r.coin = Math.floor(r.coin * 0.75); after("Boots on the stairs. The client is thrown out — after paying, minus the doorman's share."); } } : null,
-        { label: "Endure it", hint: "Keep your pay · −10 health · +3 trauma", quiet: true, action: () => { state.health = Math.max(0, state.health - 10); state.trauma = Math.min(100, state.trauma + 3); after("You wait for it to be over. It eventually is."); } }
+        house ? { label: "Shout for the doorman", hint: "Safe · 25% fee", action: () => { state.health = Math.max(0, state.health - hurtAmt(3)); r.coin = Math.floor(r.coin * 0.75); after("Boots on the stairs. The client is thrown out — after paying, minus the doorman's share."); } } : null,
+        { label: "Endure it", hint: "Keep your pay · −10 health · +3 trauma", quiet: true, action: () => { state.health = Math.max(0, state.health - hurtAmt(10)); state.trauma = Math.min(100, state.trauma + 3); after("You wait for it to be over. It eventually is."); } }
       ]);
     }
   },
@@ -1572,24 +2084,28 @@ const Game = {
   applyResult(e, r, troubleText, troubleRoll) {
     const risk = e.item.risk || 1;
     const trial = e.spec && e.spec.trial;
+    const size = e.party ? e.party.length : 1;
     const lines = [];
     if (troubleText) lines.push(troubleText);
     let rep = 0, standing = 0, trauma = 0;
     if (r.success) {
-      rep = 2 + (state.classFeatures.naturalCharm ? 1 : 0) + (e.patron ? 1 : 0);
-      standing = 2 + e.tier + (e.patron ? 2 : 0);
-      state.fame += e.patron ? 6 : 3;
+      rep = 2 + (state.classFeatures.naturalCharm ? 1 : 0) + (e.patron ? 1 : 0) + (size - 1);
+      standing = 2 + e.tier + (e.patron ? 2 : 0) + 2 * (size - 1);
+      state.fame += (e.patron ? 6 : 3) + 2 * (size - 1);
       let cg = 3 + getMod(state.attributes.cha);
       if (state.classFeatures.cravesIntensity && !isKink(e.item.id)) cg = Math.floor(cg / 2);
       state.control = clamp(state.control + cg, 0, 100);
       if (e.prefs.likes.includes(e.item.id) && !state.inspiration) { state.inspiration = 1; lines.push("They were delighted. You feel inspired."); }
+    } else if (r.partial) {
+      rep = 0; standing = 0;
+      state.fame += 1;
     } else {
       rep = -2;
       standing = -(2 + e.tier);
       trauma = state.classFeatures.resilientMind ? Math.max(0, risk - 1) : risk;
       if (state.classFeatures.haunted) trauma += 1;
       state.control = Math.max(0, state.control - 5);
-      state.health = Math.max(0, state.health - risk * 3);
+      state.health = Math.max(0, state.health - hurtAmt(risk * 3, true));
     }
     if (state.classFeatures.badRep) rep -= 1;
     state.coin += r.coin;
@@ -1598,14 +2114,21 @@ const Game = {
     state.trauma = Math.min(100, state.trauma + trauma);
     state.stats.coinEarned += r.coin;
     state.stats.encounters++;
-    if (r.success) state.stats.successes++; else state.stats.failures++;
+    const satisfied = r.success || r.partial >= 0.5;
+    if (satisfied) state.stats.successes++; else state.stats.failures++;
+    if (e.party) state.stats.groups = (state.stats.groups || 0) + 1;
     const kind = e.item.skill || "performance";
     state.stats.byType[kind] = (state.stats.byType[kind] || 0) + 1;
-    state.skills[kind] = Math.min(100, (state.skills[kind] || 0) + (r.success ? 4 : 1));
+    state.stats.played = state.stats.played || {};
+    state.stats.played[e.item.id] = (state.stats.played[e.item.id] || 0) + 1;
+    if (!trial) lines.push(...this.contractTick("tech", e.item.id, satisfied));
+    state.skills[kind] = Math.min(100, (state.skills[kind] || 0) + (r.success ? 3 : 1));
+    e.unlocks.push(...checkUnlocks());
     if (r.success && learnPosition(e.item.id)) lines.push(`You've learned ${e.item.name}.`);
-    state.clientsServed++;
+    if (e.unlocks.length) lines.push(`Your skill has grown: you can now use ${[...new Set(e.unlocks)].join(", ")}.`);
+    state.clientsServed += size;
     state.stats.bodyCount = state.clientsServed;
-    state.xp += r.success ? 18 + risk * 4 + e.tier * 4 : 8;
+    gainXp(r.success ? (18 + risk * 4 + e.tier * 4) * (1 + 0.5 * (size - 1)) : 8);
     lines.push(...checkLevelUp());
     if (state.energy <= 10 && state.exhaustion < 4) { state.exhaustion++; lines.push("You're running on fumes. Exhaustion sets in."); }
     if (e.npc && e.npc.id) adjustRel(e.npc.id, { love: r.success ? 3 : 0, lust: 2, trust: r.success ? 2 : -1 });
@@ -1614,12 +2137,146 @@ const Game = {
     const pay = trial ? "" : r.coin ? `You earn <b>${r.coin}</b> coin${r.tip ? ` (including a ${r.tip} tip)` : ""}. ` : "You earn nothing. ";
     const sw = trial ? "" : ` · ${sign(standing)} standing`;
     lines.unshift(`${pay}${sign(rep)} reputation${sw}.`);
-    if (!r.success && !trial) lines.push("<em>Word of a poor performance travels fast within the guild.</em>");
-    if (!troubleText && Narrator.on()) { const fin = Narrator.finish(e, r.success); if (fin) lines.unshift(fin + "\n"); }
-    this.log(`${r.success ? "Satisfied" : "Unsatisfied"}: ${e.who}, ${r.coin} coin.`);
+    if (!r.success && !r.partial && !trial) lines.push("<em>Word of a poor performance travels fast within the guild.</em>");
+    if (r.partial) lines.push(`<em>${Math.round(r.partial * size)} of ${size} left satisfied.</em>`);
+    if (!troubleText && Narrator.on()) { const fin = Narrator.finish(e, r.success, r.partial); if (fin) lines.unshift(fin + "\n"); }
+    this.log(`${r.success ? "Satisfied" : r.partial ? "Partly satisfied" : "Unsatisfied"}: ${e.who}, ${r.coin} coin.`);
     this.lastRoll = null;
     const next = e.spec ? () => this.runHook(r.success) : () => this.menu();
-    this.outcome(r.success ? "They leave satisfied" : "They leave unsatisfied", lines.join("\n"), next, { kicker: e.item.name, roll: troubleRoll || null });
+    this.outcome(r.success ? (e.party ? "They all leave satisfied" : "They leave satisfied") : r.partial ? "Some leave satisfied" : "They leave unsatisfied", lines.join("\n"), next, { kicker: e.item.name, roll: troubleRoll || null });
+  },
+
+  /* ---------- Contract board ---------- */
+  refreshBoard(force) {
+    const k = state.contracts;
+    if (!force && k.city === state.city && state.day < k.refreshed + 2 && k.board.length) return;
+    k.city = state.city; k.refreshed = state.day;
+    k.board = [];
+    const n = 3 + (city().tier >= 3 ? 1 : 0);
+    for (let i = 0; i < n; i++) k.board.push(makeContract());
+  },
+  contractsHere() {
+    return state.contracts.active.filter(k => k.kind !== "tally" && k.city === state.city);
+  },
+  board() {
+    this.setMode("event");
+    this.refreshBoard();
+    const k = state.contracts, full = k.active.length >= maxContracts();
+    UI.scene({ kicker: `${city().name} guildhouse`, title: "The contract board",
+      body: `Folded notes and sealed requests are pinned three deep. Take a contract and the guild expects it done: fulfil it for coin and standing; let it lapse or fail it and your name suffers.
+
+<em>${k.active.length} of ${maxContracts()} contracts taken. New postings every two days.</em>` });
+    const ch = k.board.map(c => {
+      const reward = `+${c.bonus} coin bonus · +${c.standing} standing${c.payMult ? ` · pays ×${c.payMult.toFixed(1)}` : ""}`;
+      const it = c.item ? anyItem(c.item) : null;
+      const note = it && isPosition(it.id) && !knows(it.id) ? " · new technique" : it && (state.character.specialties || []).includes(it.id) ? " · your specialty" : "";
+      return { label: c.title, hint: `${c.short} — ${reward} · ${c.days} days${note}`, disabled: full, reason: `You already hold ${maxContracts()} contracts`, action: () => {
+        c.deadline = state.day + c.days - 1;
+        k.active.push(c);
+        k.board = k.board.filter(x => x !== c);
+        this.log(`Took a contract: ${c.title}.`);
+        UI.toast("Contract taken");
+        this.board();
+      } };
+    });
+    if (!ch.length) ch.push({ label: "The board is bare", hint: "Check back in a day or two", disabled: true, reason: "Nothing posted" });
+    k.active.forEach(c => ch.push({ label: `Abandon: ${c.title}`, hint: `Costs ${Math.ceil(c.standing / 2)} standing`, quiet: true, danger: true, action: () => {
+      k.active = k.active.filter(x => x !== c); k.failed++;
+      const sd = changeStanding(-Math.ceil(c.standing / 2));
+      this.log(`Abandoned a contract: ${c.title} (${sign(sd)} standing).`);
+      this.board();
+    } }));
+    ch.push({ label: "Back", quiet: true, action: () => this.menu() });
+    UI.choices(ch);
+  },
+  contractReward(c) {
+    state.contracts.active = state.contracts.active.filter(x => x !== c);
+    state.contracts.done++;
+    state.coin += c.bonus; state.stats.coinEarned += c.bonus;
+    const sd = changeStanding(c.standing);
+    state.reputation += 1 + Math.floor(c.tier / 2);
+    state.fame += 1;
+    this.log(`Fulfilled a contract: ${c.title}. +${c.bonus} coin.`);
+    return `<b>Contract fulfilled.</b> The guild pays a bonus of ${c.bonus} coin · ${sign(sd)} standing.`;
+  },
+  contractBreak(c, why) {
+    state.contracts.active = state.contracts.active.filter(x => x !== c);
+    state.contracts.failed++;
+    const sd = changeStanding(-Math.max(2, Math.ceil(c.standing * 0.75)));
+    state.reputation = Math.max(0, state.reputation - 1);
+    this.log(`Broke a contract: ${c.title} (${sign(sd)} standing).`);
+    return `<b>Contract broken</b>${why ? ` — ${why}` : ""}. ${sign(sd)} standing.`;
+  },
+  contractTick(type, key, ok) {
+    const out = [];
+    if (!ok) return out;
+    state.contracts.active.filter(c => c.kind === "tally" && type === "tech" && c.item === key).forEach(c => {
+      c.have++;
+      if (c.have >= c.need) out.push(this.contractReward(c));
+      else out.push(`<em>Guild order progress: ${c.have}/${c.need} ${anyItem(c.item).name}.</em>`);
+    });
+    return out;
+  },
+  contractExpire() {
+    const out = [];
+    state.contracts.active.filter(c => c.deadline < state.day).forEach(c => out.push(this.contractBreak(c, `"${c.title}" lapsed`).replace(/<\/?b>/g, "")));
+    return out;
+  },
+  fulfilContract(c) {
+    if (c.kind === "court") {
+      this.hook = win => {
+        const line = win ? this.contractReward(c) : this.contractBreak(c, "they weren't charmed");
+        this.outcome(win ? "Contract fulfilled" : "Contract failed", line, () => this.menu(), { kicker: "The contract board" });
+      };
+      this.startCourt({ venue: c.venue, name: c.name, cg: c.cg, dcMod: c.dcMod });
+      return;
+    }
+    const why = whyCantWork();
+    if (why) { UI.toast(why); return; }
+    state.flags.clientsThisPhase++;
+    this.hook = ok => {
+      const line = ok ? this.contractReward(c) : this.contractBreak(c, "the client left unhappy");
+      this.outcome(ok ? "Contract fulfilled" : "Contract failed", line, () => this.menu(), { kicker: "The contract board" });
+    };
+    const spec = { item: c.item, payMult: c.payMult, dcMod: c.dcMod };
+    if (c.kind === "party") spec.group = c.size;
+    else { spec.name = c.name; spec.cg = c.cg; spec.blurb = c.short.replace(/\.$/, "").replace(/^./, m => m.toLowerCase()); }
+    this.startEncounter(spec);
+  },
+
+  /* ---------- Training at the guildhouse ---------- */
+  train() {
+    this.setMode("event");
+    const c = city();
+    const gain = 3 + Math.floor(c.tier / 2);
+    const fee = sk => 6 + 4 * c.tier + Math.floor((state.skills[sk] || 0) / 10) * 2;
+    UI.scene({ kicker: `${c.name} guildhouse`, title: "Training", body: `The guild's tutors here will drill you for a few hours. Better cities have better teachers.\n\n<em>Each lesson: +${gain} to a skill (or +8 mastery in a technique), −15 energy. Once per phase.</em>` });
+    const ch = [{ section: "Skills" }, { grid: Object.keys(state.skills).map(sk => ({
+      label: `${SKILL_LABEL[sk]} ${state.skills[sk]}`, hint: `→ ${Math.min(100, state.skills[sk] + gain)}${nextUnlock(sk) ? ` · next: ${nextUnlock(sk)}` : ""}`,
+      price: String(fee(sk)), disabled: state.coin < fee(sk) || state.skills[sk] >= 100, reason: state.skills[sk] >= 100 ? "Mastered" : `Need ${fee(sk)} coin`,
+      action: () => {
+        state.coin -= fee(sk); state.energy = Math.max(0, state.energy - 15); state.flags.trainedThisPhase = true;
+        state.skills[sk] = Math.min(100, state.skills[sk] + gain);
+        gainXp(10 + 2 * c.tier);
+        const un = checkUnlocks(); const lv = checkLevelUp();
+        this.log(`Trained ${SKILL_LABEL[sk]} to ${state.skills[sk]}.`);
+        this.outcome("A lesson well learned", `Hours of drills with a guild tutor. ${SKILL_LABEL[sk]} rises to ${state.skills[sk]}.${un.length ? `\n\n<b>Unlocked:</b> ${un.join(", ")}.` : ""}${lv.length ? "\n" + lv.join("\n") : ""}`, null, { kicker: "Training" });
+      } })) }];
+    const techs = [...state.knownPositions.filter(isPosition), ...knownKinks()];
+    const tfee = 5 + 3 * c.tier;
+    ch.push({ section: "Practice a technique" }, { grid: techs.map(id => ({
+      label: nameOf(id), hint: `${MASTERY_NAMES[masteryTier(id)] || "Untrained"} · ${state.mastery[id] || 0}/${MASTERY_AT[3]}`, price: String(tfee),
+      disabled: state.coin < tfee || (state.mastery[id] || 0) >= MASTERY_AT[3], reason: (state.mastery[id] || 0) >= MASTERY_AT[3] ? "Mastered" : `Need ${tfee} coin`,
+      action: () => {
+        state.coin -= tfee; state.energy = Math.max(0, state.energy - 15); state.flags.trainedThisPhase = true;
+        const before = masteryTier(id);
+        state.mastery[id] = Math.min(MASTERY_AT[3], (state.mastery[id] || 0) + 8);
+        const after = masteryTier(id);
+        gainXp(8 + 2 * c.tier); const lv = checkLevelUp();
+        this.outcome("Practice", `You rehearse ${nameOf(id)} until it's second nature.${after > before ? `\n\n<b>You are now ${MASTERY_NAMES[after].toLowerCase()} at ${nameOf(id)}</b> (+${after} to its checks).` : ""}${lv.length ? "\n" + lv.join("\n") : ""}`, null, { kicker: "Training" });
+      } })) });
+    ch.push({ label: "Not now", quiet: true, action: () => this.menu() });
+    UI.choices(ch);
   },
 
   /* ---------- Courtship ---------- */
@@ -1629,16 +2286,31 @@ const Game = {
     if (!spec.free) {
       if (state.flags.courtedThisPhase || state.energy < 10) { UI.toast("Not now."); this.menu(); return; }
       state.flags.courtedThisPhase = true;
-      state.energy -= 8;
+      state.energy -= 10;
     }
-    const cg = spec.cg || (Math.random() < 0.55 ? "male" : "female");
+    const cg = spec.cg || clientGender();
     const name = spec.name || `${pick(v.titles[cg])} ${pick(SURNAMES)}`;
     const tierBump = Math.max(0, city().tier - (spec.venue === "tavern" ? 0 : spec.venue === "salon" ? 2 : 4));
+    let dc = v.dc + tierBump + (spec.dcMod || 0);
+    if (state.classFeatures.courtlyGrace) dc -= 1;
+    if (state.classFeatures.shyCrowds && spec.venue === "court") dc += 2;
+    if (!spec.trial) {
+      const fatigue = societyFatigue();
+      dc += 2 * fatigue;
+      const log = state.courtLog[state.city] || (state.courtLog[state.city] = []);
+      log.push(state.day);
+      state.courtLog[state.city] = log.filter(d => d >= state.day - 2);
+    }
+    let interest = 30 + Math.min(15, Math.floor(state.reputation / 20)) + (state.upgrades.finery ? 10 : 0) + (spec.bonus || 0);
+    if (state.classFeatures.beautyMark) interest += 5;
+    if (state.classFeatures.tattoo && spec.venue !== "tavern") interest -= 5;
+    const body = spec.trial ? null : rollBodyPref();
+    interest += 10 * bodyMatch(body);
     state.court = {
       venue: spec.venue, name, cg, pers: spec.pers || pick(Object.keys(PERSONALITIES)),
-      interest: clamp(30 + Math.min(15, Math.floor(state.reputation / 20)) + (state.upgrades.finery ? 10 : 0) + (spec.bonus || 0), 0, 95),
+      interest: clamp(interest, 0, 95),
       round: 1, max: spec.rounds || 4, used: {}, revealed: false, readTried: false,
-      dc: v.dc + tierBump + (spec.dcMod || 0), last: "", spec, said: {}
+      dc, last: "", spec, said: {}, body
     };
     this.log(`Courted ${name} at ${v.where}.`);
     this.lastRoll = null;
@@ -1662,13 +2334,13 @@ const Game = {
       kicker: `${c.spec.trial ? "Rank trial · " : ""}${cap(v.where)} · exchange ${c.round} of ${c.max}`,
       title: c.name,
       speech: P.prompts[(c.round - 1) % P.prompts.length],
-      body: c.last || `<em>You catch ${c.name}'s eye across the room and make your way over.</em>`,
+      body: c.last || `<em>You catch ${c.name}'s eye across the room and make your way over.${c.body ? ` ${cap(Narrator.fill("{they}", courtTarget(c)))} ${bodyPrefText(c.body)}${bodyMatch(c.body) > 0 ? ", and you can see it working in your favor." : bodyMatch(c.body) < 0 ? ". You are not what they had in mind." : "."}` : ""}</em>`,
       meter: { label: "Interest", value: c.interest, color: "var(--c-rep)", pips: { max: c.max, used: c.round - 1 } },
       roll: this.lastRoll, chips
     });
     const ch = [];
     if (!c.readTried) {
-      const im = skillMeta("insight", { bonus: state.classFeatures.keenEye ? 2 : 0 });
+      const im = skillMeta("insight", { bonus: readBonus() });
       const rdc = c.dc - 1;
       ch.push({ label: "Read them first", hint: "Insight · learn what they respond to · doesn't use an exchange", odds: odds(im, rdc), action: () => {
         c.readTried = true;
@@ -1686,7 +2358,7 @@ const Game = {
       const notes = [c.said[t]];
       if (c.revealed) notes.push(P.favors.includes(t) ? "they'll love this" : P.hates === t ? "they hate this" : "neutral");
       if (used) notes.push("repeating — harder");
-      notes.push(meta.label.replace(/^\w+ \(|\)$/g, ""));
+      notes.push(T.attr ? T.attr.toUpperCase() : `${SKILL_LABEL[T.skill]} (${SKILL_ATTR[T.skill].toUpperCase()})`);
       ch.push({ label: T.name, hint: notes.join(" · "), odds: odds(meta, dc), action: () => this.courtReply(t) });
     });
     ch.push({ label: "Make your excuses", hint: c.interest >= 40 ? "Leave on good terms" : "Leaving now will look like a snub", quiet: true, action: () => this.finishCourt(true) });
@@ -1703,10 +2375,12 @@ const Game = {
     const fav = P.favors.includes(t), hate = P.hates === t;
     let d, key;
     if (hate) { d = r.success ? -15 : -25; key = "hated"; }
-    else if (r.success) { d = fav ? 22 + 3 * Math.floor((r.total - dc) / 3) : 12; key = fav ? "great" : "fine"; }
-    else { d = -8; key = "poor"; }
+    else if (r.success) { d = fav ? 20 + 3 * Math.floor((r.total - dc) / 3) : 10; key = fav ? "great" : "fine"; }
+    else { d = -10; key = "poor"; }
     c.interest = clamp(c.interest + d, 0, 100);
-    state.stress = clamp(state.stress + (r.success ? 0 : 2), 0, 100);
+    let st = r.success ? 0 : 2;
+    if (st && state.classFeatures.unflappable) st -= 1;
+    state.stress = clamp(state.stress + st, 0, 100);
     const reaction = Narrator.fill(pick(COURT_REACTIONS[key]), courtTarget(c));
     c.last = `You: <em>${c.said[t]}</em>\n${reaction}`;
     c.round++;
@@ -1719,12 +2393,13 @@ const Game = {
     if (!c) { this.menu(); return; }
     const v = VENUES[c.venue];
     const s = v.scale;
-    const win = c.interest >= 70;
+    const win = c.interest >= 65;
     const lose = c.interest < 40;
     state.stats.courtships++;
     if (win) state.stats.courtWins++;
-    state.xp += win ? 20 + 6 * s : 6;
-    const lvl = checkLevelUp();
+    const lvl = c.spec.trial ? [] : this.contractTick("court", c.venue, win);
+    gainXp(win ? 15 + 5 * s : 5);
+    lvl.push(...checkLevelUp());
     this.lastRoll = null;
     const tgt = courtTarget(c);
     const they = Narrator.fill("{they}", tgt), their = Narrator.fill("{their}", tgt);
@@ -1735,27 +2410,27 @@ const Game = {
       return;
     }
     if (win) {
-      const st = changeStanding(2 + 2 * s);
-      state.fame += 2 * s;
+      const st = changeStanding(1 + s);
+      state.fame += s + 1;
       state.reputation += s;
       this.setMode("event");
       UI.scene({ kicker: `Interest ${c.interest}`, title: `${c.name} is charmed`,
-        body: `By the end of the evening ${they} won't let you leave ${their} side.\n\n<em>${sign(st)} standing · +${2 * s} fame · +${s} reputation</em>${lvl.length ? "\n" + lvl.join("\n") : ""}` });
-      const tierPay = (15 + 10 * city().tier) * s;
+        body: `By the end of the evening ${they} won't let you leave ${their} side.\n\n<em>${sign(st)} standing · +${s + 1} fame · +${s} reputation</em>${lvl.length ? "\n" + lvl.join("\n") : ""}` });
+      const tierPay = (10 + 8 * city().tier) * s;
       UI.choices([
         { label: `Accept an invitation to ${their} chambers`, hint: "A private engagement that pays very well", primary: true,
           disabled: state.energy < 15 || state.health < MIN_HEALTH_TO_WORK, reason: "Too tired or hurt tonight",
           action: () => this.startEncounter({ name: c.name, cg: c.cg, typeKey: pick(["generous", "demanding", "ordinary"]), payMult: 1 + 0.5 * s, patron: true }) },
-        { label: "Seek their patronage instead", hint: `A gift of about ${tierPay} coin and more standing`, action: () => {
+        { label: "Seek their patronage instead", hint: `A gift of about ${tierPay} coin`, action: () => {
           state.coin += tierPay; state.stats.coinEarned += tierPay;
-          const st2 = changeStanding(s);
-          this.outcome("A new patron", `${c.name} presses a heavy purse into your hand and promises to speak well of you.\n\n<em>+${tierPay} coin · ${sign(st2)} standing</em>`, null);
+          this.outcome("A new patron", `${c.name} presses a purse into your hand and promises to speak well of you.\n\n<em>+${tierPay} coin</em>`, null);
         } }
       ]);
       return;
     }
     if (lose) {
-      const st = changeStanding(-2 * s);
+      const loss = state.classFeatures.salonLion ? 0 : -(1 + 2 * s) - (state.classFeatures.gossipMagnet ? 2 : 0);
+      const st = changeStanding(loss);
       state.reputation = Math.max(0, state.reputation - 2 * s);
       state.control = Math.max(0, state.control - 3);
       this.outcome("A public snub", `${c.name} turns ${their} back on you mid-sentence. Half the room saw it.\n\n<em>${sign(st)} standing · −${2 * s} reputation</em>${lvl.length ? "\n" + lvl.join("\n") : ""}`, null, { kicker: `Interest ${c.interest}` });
@@ -1770,7 +2445,7 @@ const Game = {
     state.flags.trialDay = state.day;
     const target = state.rank + 1;
     const R = RANKS[target];
-    const cg = Math.random() < 0.5 ? "male" : "female";
+    const cg = clientGender();
     const examiner = `${cg === "male" ? pick(["Examiner Halvard", "Examiner Benedek", "Examiner Corin"]) : pick(["Examiner Ottoline", "Examiner Isaura", "Examiner Maude"])}`;
     const venue = target >= 4 ? "court" : target >= 2 ? "salon" : "tavern";
     const item = pick([...city().tastes.filter(id => isKink(id) || state.knownPositions.includes(id)), ...state.knownPositions.filter(isPosition)]);
@@ -1806,7 +2481,7 @@ const Game = {
       state.coin += R.purse;
       state.stats.coinEarned += R.purse;
       state.pendingLevelUps++;
-      state.xp += 40 + 10 * state.rank;
+      gainXp(40 + 10 * state.rank);
       const lv = checkLevelUp();
       this.log(`Promoted to ${R.name}.`);
       const opens = CITIES.find(c => c.rank === state.rank);
@@ -1902,7 +2577,7 @@ const Game = {
     if (R.standing) got.push(`${sign(changeStanding(R.standing))} standing`);
     if (R.fame) { state.fame += R.fame; got.push(`+${R.fame} fame`); }
     if (R.rep) { state.reputation += R.rep; got.push(`+${R.rep} reputation`); }
-    if (R.xp) { state.xp += R.xp; got.push(`+${R.xp} XP`); }
+    if (R.xp) { gainXp(R.xp); got.push(`+${R.xp} XP`); }
     if (R.rel) Object.keys(R.rel).forEach(id => adjustRel(id, R.rel[id]));
     if (R.flag) state.story[R.flag] = true;
     if (R.learn) { const l = grantClassPositions(1); if (l.length) got.push(`learned ${l[0]}`); }
@@ -2022,6 +2697,7 @@ const Game = {
     state.flags.restedThisPhase = false;
     state.flags.clientsThisPhase = 0;
     state.flags.courtedThisPhase = false;
+    state.flags.trainedThisPhase = false;
     state.phaseMods = { payMult: 1, trouble: 0, extraClients: 0, label: "" };
     if (state.phase === "morning") { state.phase = "afternoon"; return false; }
     if (state.phase === "afternoon") { state.phase = "night"; return false; }
@@ -2054,7 +2730,7 @@ const Game = {
       state.debtDays++;
       L.push(`Interest on your debt: +${int}.`);
     }
-    const up = city().upkeep;
+    const up = lodging();
     if (this.charge(up)) L.push(`Paid ${up} for lodging in ${city().name}.`);
     else { state.stress = Math.min(100, state.stress + 8); state.reputation = Math.max(0, state.reputation - 1); L.push(`Couldn't cover ${up} for lodging. The shortfall goes on your debt.`); }
     if (state.day % 7 === 0) {
@@ -2063,6 +2739,7 @@ const Game = {
       else { const sd = changeStanding(-8); L.push(`You couldn't pay your guild dues. The guild notes your arrears (${sign(sd)} standing).`); }
     }
     if (!state.debt) state.debtDays = 0;
+    L.push(...this.contractExpire());
     this.dawnLines = L;
     this.log(`Dawn of day ${state.day}. ${L.join(" ")}`);
     this.save(false);
@@ -2085,6 +2762,7 @@ const Game = {
   },
 
   afterPhase() {
+    if (!state.ended && state.classFeatures.gossipMagnet && state.rank >= 1 && Math.random() < 0.12) { EVENTS.find(x => x.id === "rumors").run(); return; }
     if (!state.ended && Math.random() < 0.3) {
       const pool = EVENTS.filter(ev => ev.when());
       if (pool.length) { pick(pool).run(); return; }
@@ -2097,7 +2775,7 @@ const Game = {
     this.log("A creditor came calling.");
     UI.scene({ kicker: `Debt ${state.debt}`, title: "A creditor at the door", body: "A broad man with a ledger and a cudgel leans in your doorway. \"You owe. My employer is losing patience.\"", chips: [{ text: `${state.debtDays} days overdue`, cls: "warn" }] });
     const pm = skillMeta("persuasion", { bonus: state.upgrades.bodyguard ? 2 : 0 }), dc = 12 + controlMod();
-    const beaten = () => { state.health = Math.max(0, state.health - 20); state.trauma = Math.min(100, state.trauma + 4); state.reputation = Math.max(0, state.reputation - 2); changeStanding(-3); state.debtDays = 0; };
+    const beaten = () => { state.health = Math.max(0, state.health - hurtAmt(20)); state.trauma = Math.min(100, state.trauma + 4); state.reputation = Math.max(0, state.reputation - 2); changeStanding(-3); state.debtDays = 0; };
     UI.choices([
       { label: "Pay what you can", hint: `Hand over ${Math.min(state.coin, state.debt)} coin`, disabled: state.coin < 1, reason: "You have nothing", action: () => {
         const amt = Math.min(state.coin, state.debt); state.coin -= amt; state.debt -= amt; state.debtDays = state.debt ? 1 : 0;
@@ -2140,7 +2818,7 @@ const Game = {
         { label: "Fight them off", hint: "STR · fail: hurt and robbed", odds: odds(sm, 13), action: () => {
           const r = check(sm, 13);
           if (r.success) done("You lay one out with your bag and the other thinks better of it.");
-          else { const lost = Math.floor(state.coin / 3); state.coin -= lost; state.health = Math.max(0, state.health - 15); done(`They take ${lost} coin and leave you bruised in the ditch.`); }
+          else { const lost = Math.floor(state.coin / 3); state.coin -= lost; state.health = Math.max(0, state.health - hurtAmt(15)); done(`They take ${lost} coin and leave you bruised in the ditch.`); }
         } },
         { label: "Charm them", hint: "Persuasion · fail: robbed", odds: odds(pm, 14), action: () => {
           const r = check(pm, 14);
@@ -2167,6 +2845,7 @@ const Game = {
     let gain = worked ? 22 : 12;
     if (state.classFeatures.quickRecovery) gain += 8;
     if (state.classFeatures.restful) gain += 5;
+    if (state.classFeatures.restless) gain -= 6;
     state.energy = Math.min(100, state.energy + gain);
     state.health = Math.min(maxHealth(), state.health + (worked ? 8 : 4));
     state.stress = Math.max(0, state.stress - (worked ? 8 : 4));
@@ -2222,6 +2901,7 @@ const Game = {
       if (mc.build === "curvaceous") mc.build = "sturdy";
       if (!BUILDS[mc.build]) mc.build = "average";
       if (!mc.name) mc.name = pick(NAMES[mc.gender]);
+      if (!merged.knownKinks || !merged.knownKinks.length) merged.knownKinks = [...(CLASS_KINKS[mc.class] || [])];
       Object.keys(state).forEach(k => delete state[k]);
       Object.assign(state, merged);
       UI.skipDeltas = true;
@@ -2662,37 +3342,91 @@ const MOTIVES = {
     failText: "In the end, the life took more than you could give." }
 };
 
+const CLIENTELE = {
+  men: { label: "Mostly men", hint: "About 85% of clients and suitors are men", male: 0.85 },
+  women: { label: "Mostly women", hint: "About 85% of clients and suitors are women", male: 0.15 },
+  anyone: { label: "Anyone", hint: "An even mix of men and women", male: 0.5 }
+};
+const HAIR = ["Raven black", "Chestnut", "Honey blonde", "Copper red", "Ash brown", "Silver-streaked"];
+const EYES = ["Grey", "Green", "Hazel", "Brown", "Blue", "Amber"];
+const MARKS = {
+  none: { label: "None", hint: "Nothing that stands out" },
+  beauty: { label: "Beauty mark", hint: "+5 starting interest in every courtship", feature: "beautyMark" },
+  tattoo: { label: "Sailor's tattoo", hint: "+15% pay in Saltmere and Ashford · −5 interest at salons and court", feature: "tattoo" },
+  scar: { label: "Old scar", hint: "+2 on every check when trouble starts · −1 pay", feature: "scar" },
+  freckles: { label: "Freckles", hint: "+1 on every check with nervous clients", feature: "freckles" }
+};
+const VOICES = {
+  honeyed: { label: "Honeyed", hint: "+1 to Persuasion and Flatter", feature: "honeyVoice" },
+  husky: { label: "Husky", hint: "+1 to Kink and Bold", feature: "huskyVoice" },
+  soft: { label: "Soft-spoken", hint: "+1 to Insight and Listen", feature: "softVoice" },
+  bright: { label: "Bright", hint: "+1 to Performance and Coy", feature: "brightVoice" }
+};
+
 const TRAITS = {
   pos: [
     { id: "silver", name: "Natural Charm", cost: 2, desc: "+1 CHA, +1 rep per satisfied client", apply: t => { t.attributes.cha += 1; t.classFeatures.naturalCharm = true; } },
     { id: "nerves", name: "Steady Nerves", cost: 2, desc: "Breakdowns cost 3 trauma and 5 control, not 5 and 10", apply: t => { t.classFeatures.steadyNerves = true; } },
+    { id: "lucky", name: "Lucky Star", cost: 2, desc: "Once a day, your first failed roll is rerolled", apply: t => { t.classFeatures.lucky = true; } },
+    { id: "quick", name: "Quick Study", cost: 2, desc: "+25% experience from everything", apply: t => { t.classFeatures.quickStudy = true; } },
+    { id: "tireless", name: "Tireless", cost: 2, desc: "−1 energy on every encounter round", apply: t => { t.classFeatures.tireless = true; } },
     { id: "tough", name: "Thick Skinned", cost: 1, desc: "Less stress when a technique lands", apply: t => { t.classFeatures.thickSkinned = true; } },
     { id: "flexible", name: "Flexible", cost: 1, desc: "+4 Vaginal, +2 Anal", apply: t => { t.skills.vaginal += 4; t.skills.anal += 2; } },
-    { id: "keen", name: "Keen Eye", cost: 1, desc: "+2 when sizing up clients", apply: t => { t.classFeatures.keenEye = true; } },
-    { id: "streetsmart", name: "Street Smart", cost: 1, desc: "Trouble finds you less often", apply: t => { t.classFeatures.streetSmart = true; } }
+    { id: "keen", name: "Keen Eye", cost: 1, desc: "+2 when sizing people up", apply: t => { t.classFeatures.keenEye = true; } },
+    { id: "streetsmart", name: "Street Smart", cost: 1, desc: "Trouble finds you less often", apply: t => { t.classFeatures.streetSmart = true; } },
+    { id: "grace", name: "Courtly Grace", cost: 1, desc: "−1 difficulty in every courtship", apply: t => { t.classFeatures.courtlyGrace = true; } },
+    { id: "crowd", name: "Crowd Pleaser", cost: 1, desc: "In group encounters, more of your attention spills over to everyone", apply: t => { t.classFeatures.crowdPleaser = true; } },
+    { id: "hardy", name: "Hardy", cost: 1, desc: "Lose 5 less health whenever you're hurt", apply: t => { t.classFeatures.hardy = true; } }
   ],
   neg: [
     { id: "frail", name: "Frail", grant: 2, desc: "+2 energy cost per round", apply: t => { t.classFeatures.frail = true; } },
     { id: "infamous", name: "Bad Reputation", grant: 2, desc: "−4 rep now, −1 rep per client", apply: t => { t.reputation = Math.max(0, t.reputation - 4); t.classFeatures.badRep = true; } },
     { id: "haunted", name: "Haunted", grant: 2, desc: "+1 trauma whenever an encounter goes badly", apply: t => { t.classFeatures.haunted = true; } },
+    { id: "clumsy", name: "Clumsy", grant: 2, desc: "Any roll of 1 or 2 fails, whatever your bonus", apply: t => { t.classFeatures.clumsy = true; } },
+    { id: "shy", name: "Shy in Crowds", grant: 2, desc: "+2 difficulty in group encounters and at court", apply: t => { t.classFeatures.shyCrowds = true; } },
     { id: "nervous", name: "Nervous", grant: 1, desc: "More stress when a technique fails", apply: t => { t.classFeatures.nervous = true; } },
     { id: "addicted", name: "Craves Intensity", grant: 1, desc: "Half Control from non-kink work", apply: t => { t.classFeatures.cravesIntensity = true; } },
     { id: "timid", name: "Timid", grant: 1, desc: "Start with 10 less Control", apply: t => { t.control = Math.max(0, t.control - 10); t.classFeatures.timid = true; } },
-    { id: "marked", name: "Marked", grant: 1, desc: "Trouble finds you more often", apply: t => { t.classFeatures.marked = true; } }
+    { id: "marked", name: "Marked", grant: 1, desc: "Trouble finds you more often", apply: t => { t.classFeatures.marked = true; } },
+    { id: "expensive", name: "Expensive Tastes", grant: 1, desc: "Lodging costs 50% more everywhere", apply: t => { t.classFeatures.expensiveTastes = true; } },
+    { id: "gossip", name: "Gossip Magnet", grant: 1, desc: "Rumors find you more often, and snubs cost 2 more standing", apply: t => { t.classFeatures.gossipMagnet = true; } },
+    { id: "restless", name: "Restless Sleeper", grant: 1, desc: "Resting restores 6 less energy", apply: t => { t.classFeatures.restless = true; } }
   ]
 };
+
+// Feats: one can be bought at creation with trait points; more are earned free at levels 4, 8 and 12.
 const FEATS = {
   silverTongue: { name: "Silver Tongue", cost: 2, desc: "Advantage on every Persuasion check" },
   ironHips: { name: "Iron Hips", cost: 2, desc: "−2 energy on vaginal rounds" },
-  resilientMind: { name: "Resilient Mind", cost: 1, desc: "−1 trauma when an encounter goes badly" }
+  resilientMind: { name: "Resilient Mind", cost: 1, desc: "−1 trauma when an encounter goes badly" },
+  insatiable: { name: "Insatiable", cost: 2, desc: "+1 round in every encounter", req: { con: 13 } },
+  showstopper: { name: "Showstopper", cost: 2, desc: "Advantage on the first round of every encounter", req: { cha: 15 } },
+  ringmaster: { name: "Ringmaster", cost: 2, desc: "Group encounters: +1 round, and Bring Them Together is stronger", req: { cha: 13 } },
+  unflappable: { name: "Unflappable", cost: 2, desc: "Every stress gain is reduced by 1", req: { wis: 13 } },
+  brawler: { name: "Brawler", cost: 1, desc: "+3 on Strength checks", req: { str: 13 } },
+  bargainer: { name: "Shrewd Bargainer", cost: 1, desc: "+10% pay from every client", req: { int: 12 } },
+  ropeMaster: { name: "Master of Ropes", cost: 2, desc: "+2 Kink checks; Bondage and Dominance pay 20% more", req: { skill: { kink: 20 } } },
+  salonLion: { name: "Salon Lion", cost: 2, desc: "+1 to every courtship tone, and snubs cost no standing", req: { int: 13 } },
+  oracle: { name: "Read Like a Book", cost: 1, desc: "+3 when sizing people up or reading them", req: { wis: 14 } }
 };
+function featReqText(f) {
+  if (!f.req) return "";
+  return Object.keys(f.req).map(k => k === "skill" ? Object.keys(f.req.skill).map(s => `${SKILL_LABEL[s]} ${f.req.skill[s]}`).join(", ") : `${k.toUpperCase()} ${f.req[k]}`).join(", ");
+}
+function featReqMet(t, f) {
+  if (!f.req) return true;
+  return Object.keys(f.req).every(k => k === "skill"
+    ? Object.keys(f.req.skill).every(s => (t.skills[s] || 0) >= f.req.skill[s])
+    : (t.attributes[k] || 0) >= f.req[k]);
+}
 
 const POINT_COST = { 8: 0, 9: 1, 10: 2, 11: 3, 12: 4, 13: 5, 14: 7, 15: 9 };
 const POINT_BUDGET = 27;
 const ATTR_KEYS = ["str", "dex", "con", "int", "wis", "cha"];
+const MAX_FLAWS = 3, MAX_STRENGTHS = 3, MAX_SPECS = 2, MAX_LIMITS = 2;
 function pointsSpent(a) { return ATTR_KEYS.reduce((s, k) => s + POINT_COST[a[k]], 0); }
 function traitPointsLeft(d) {
-  let p = 0;
+  let p = (d.limits || []).length;
   d.traits.forEach(id => {
     const n = TRAITS.neg.find(x => x.id === id), q = TRAITS.pos.find(x => x.id === id);
     if (n) p += n.grant;
@@ -2710,8 +3444,10 @@ function bonusFor(t, skill) {
 // Applies a creation draft to a fresh state object. Pure with respect to the draft.
 function applyDraft(t, d) {
   Object.assign(t.character, {
-    name: d.name, gender: d.gender, appearance: d.appearance, build: d.build, experience: d.difficulty,
+    name: d.name, gender: d.gender, clientele: d.clientele, appearance: d.appearance, build: d.build,
+    hair: d.hair, eyes: d.eyes, mark: d.mark, voice: d.voice, body: { ...BODY_DEFAULT, ...(d.body || {}) }, experience: d.difficulty,
     class: d.cls, subclass: d.sub, background: d.background, motivation: d.motive,
+    specialties: [...(d.specs || [])], limits: [...(d.limits || [])],
     traits: [...d.traits], feat: d.feat && FEATS[d.feat] ? FEATS[d.feat].name : null
   });
   t.attributes = { ...d.attrs };
@@ -2722,11 +3458,15 @@ function applyDraft(t, d) {
     const s = d.sub && SUBCLASSES[d.cls].find(x => x.id === d.sub);
     if (s) { s.apply(t); (SUBCLASS_POSITIONS[d.sub] || []).forEach(id => learnFor(t, id)); }
   }
+  t.knownKinks = [...new Set([...(CLASS_KINKS[d.cls] || []), ...(d.specs || [])])].filter(id => !(d.limits || []).includes(id));
   if (BUILDS[d.build]) t.classFeatures[BUILDS[d.build].feature] = true;
+  if (MARKS[d.mark] && MARKS[d.mark].feature) t.classFeatures[MARKS[d.mark].feature] = true;
+  if (VOICES[d.voice]) t.classFeatures[VOICES[d.voice].feature] = true;
   if (d.background && BACKGROUNDS[d.background]) BACKGROUNDS[d.background].apply(t);
   if (d.motive && MOTIVES[d.motive] && MOTIVES[d.motive].apply) MOTIVES[d.motive].apply(t);
   d.traits.forEach(id => { const x = TRAITS.pos.find(q => q.id === id) || TRAITS.neg.find(q => q.id === id); if (x) x.apply(t); });
-  if (d.feat && FEATS[d.feat]) t.classFeatures[d.feat] = true;
+  t.feats = [];
+  if (d.feat && FEATS[d.feat]) { t.classFeatures[d.feat] = true; t.feats.push(d.feat); }
   t.traitPoints = Math.max(0, traitPointsLeft(d));
   t.ironman = !!d.ironman;
   return t;
@@ -2735,18 +3475,21 @@ function freshState() { return JSON.parse(JSON.stringify(DEFAULT_STATE)); }
 
 const ARCHETYPES = [
   { title: "The Socialite", blurb: "Female Courtesan · Salon Rose · Fallen Noble · Ambition",
-    d: { gender: "female", appearance: "striking", build: "slender", difficulty: "experienced", cls: "Courtesan", sub: "Salon Rose",
-      background: "Fallen Noble", motive: "ambition", traits: ["nervous", "addicted", "silver"], feat: null } },
+    d: { gender: "female", clientele: "men", appearance: "striking", build: "slender", hair: "Honey blonde", eyes: "Green", mark: "beauty", voice: "honeyed",
+      difficulty: "experienced", cls: "Courtesan", sub: "Salon Rose", background: "Fallen Noble", motive: "ambition",
+      specs: ["roleplay", "praise_kink"], limits: ["impact_play"], traits: ["nervous", "addicted", "silver"], feat: null } },
   { title: "The Survivor", blurb: "Male Streetwalker · Dockside · Street Orphan · Survival",
-    d: { gender: "male", appearance: "average", build: "sturdy", difficulty: "experienced", cls: "Streetwalker", sub: "Dockside",
-      background: "Street Orphan", motive: "survival", traits: ["frail", "tough"], feat: "resilientMind" } },
+    d: { gender: "male", clientele: "anyone", appearance: "average", build: "sturdy", hair: "Ash brown", eyes: "Grey", mark: "scar", voice: "husky",
+      difficulty: "experienced", cls: "Streetwalker", sub: "Dockside", background: "Street Orphan", motive: "survival",
+      specs: ["dirty_talk", "spanking"], limits: [], traits: ["frail", "tough"], feat: "resilientMind" } },
   { title: "The Mistress of Rope", blurb: "Female Dominatrix · Rope Artist · Camp Follower · Freedom",
-    d: { gender: "female", appearance: "striking", build: "average", difficulty: "experienced", cls: "Dominatrix", sub: "Rope Artist",
-      background: "Camp Follower", motive: "freedom", traits: ["infamous", "marked", "keen"], feat: "silverTongue" } }
+    d: { gender: "female", clientele: "anyone", appearance: "striking", build: "average", hair: "Raven black", eyes: "Amber", mark: "tattoo", voice: "husky",
+      difficulty: "experienced", cls: "Dominatrix", sub: "Rope Artist", background: "Camp Follower", motive: "freedom",
+      specs: ["bondage", "dominance_and_submission"], limits: ["foot_fetish"], traits: ["infamous", "marked", "keen"], feat: "silverTongue" } }
 ];
 
-const STEPS = ["identity", "looks", "difficulty", "path", "specialty", "attributes", "background", "motive", "traits", "review"];
-const STEP_NAMES = { identity: "Name", looks: "Looks", difficulty: "Difficulty", path: "Path", specialty: "Specialty", attributes: "Attributes", background: "Past", motive: "Reason", traits: "Traits", review: "Review" };
+const STEPS = ["identity", "looks", "body", "details", "difficulty", "path", "specialty", "attributes", "background", "motive", "desires", "traits", "review"];
+const STEP_NAMES = { identity: "Name", looks: "Looks", body: "Body", details: "Details", difficulty: "Difficulty", path: "Path", specialty: "Specialty", attributes: "Attributes", background: "Past", motive: "Reason", desires: "Desires", traits: "Traits", review: "Review" };
 
 function cleanName(s) { return String(s || "").replace(/[<>"]/g, "").replace(/\s+/g, " ").trim().slice(0, 24); }
 function sel(label, hint, on, action, extra) {
@@ -2757,9 +3500,10 @@ const Creation = {
   d: null, i: 0, editing: false, prevVals: null,
 
   blank() {
-    return { name: "", gender: "female", appearance: "average", build: "average", difficulty: "experienced",
+    return { name: "", gender: "female", clientele: "men", appearance: "average", build: "average",
+      hair: HAIR[0], eyes: EYES[0], mark: "none", voice: "honeyed", body: { ...BODY_DEFAULT }, difficulty: "experienced",
       cls: null, sub: null, attrs: { str: 8, dex: 8, con: 8, int: 8, wis: 8, cha: 8 },
-      background: null, motive: null, traits: [], feat: null, ironman: false };
+      background: null, motive: null, specs: [], limits: [], traits: [], feat: null, ironman: false };
   },
 
   start(fresh) {
@@ -2771,7 +3515,7 @@ const Creation = {
       body: "Rise through the Courtesan's Guild, from a lowly Initiate in the port of Saltmere to Guild Master in the capital. Every rank opens a new city and higher society. Every poor performance costs you standing, and the guild casts out those who fall too far.\n\nRead your clients, court the nobility, take on favors, and decide how far you'll go — and whether you'll get out first.\n\n<em>All characters are adults.</em>" });
     UI.choices([
       save ? { label: "Continue your life", primary: true, action: () => Game.load() } : null,
-      { label: "Create your character", hint: "Ten short steps, with a live preview", primary: !save, action: () => this.go(0) },
+      { label: "Create your character", hint: `${STEPS.length} short steps, with a live preview`, primary: !save, action: () => this.go(0) },
       { label: "Roll a random life", hint: "Random choices — review and tweak before you begin", action: () => { this.d = this.randomDraft(); this.editing = true; this.go(STEPS.indexOf("review")); } },
       { section: "Quick start" },
       ...ARCHETYPES.map(a => ({ label: a.title, hint: a.blurb, action: () => {
@@ -2836,12 +3580,14 @@ const Creation = {
       d.gender = g;
       this.identity();
     };
-    this.frame("Who are you?", "Choose your name and whether you are a woman or a man.", [
+    this.frame("Who are you?", "Choose your name, whether you are a woman or a man, and who tends to seek you out.", [
       { section: "Gender" },
       { grid: [
         sel("Female", "she / her", d.gender === "female", () => setGender("female")),
         sel("Male", "he / him", d.gender === "male", () => setGender("male"))
       ] },
+      { section: "Your clientele" },
+      ...Object.keys(CLIENTELE).map(k => sel(CLIENTELE[k].label, CLIENTELE[k].hint, d.clientele === k, () => { this.readName(); d.clientele = k; this.identity(); })),
       { label: "Random name", hint: `Draw a ${pr("noun", d.gender)}'s name from the old city`, quiet: true, action: () => { d.name = pick(NAMES[d.gender]); this.identity(); } },
       { label: "Next", primary: true, action: () => { this.readName(); if (!d.name) d.name = pick(NAMES[d.gender]); this.next(); } }
     ], { html, noPreview: true });
@@ -2856,6 +3602,34 @@ const Creation = {
       ...Object.keys(APPEARANCES).map(k => sel(APPEARANCES[k].label, APPEARANCES[k].hint, d.appearance === k, () => { d.appearance = k; this.looks(); })),
       { section: "Build" },
       ...Object.keys(BUILDS).map(k => sel(buildWord(k, d.gender), BUILDS[k].hint, d.build === k, () => { d.build = k; this.looks(); })),
+      { label: "Next", primary: true, action: () => this.next() }
+    ]);
+  },
+
+  body() {
+    const d = this.d;
+    d.body = { ...BODY_DEFAULT, ...(d.body || {}) };
+    const rows = [];
+    bodyParts(d.gender).forEach(k => {
+      rows.push({ section: BODY[k].label });
+      rows.push({ grid: BODY[k].opts.map(v => sel(v, "", d.body[k] === v, () => { d.body[k] = v; this.body(); })) });
+    });
+    this.frame("Your body", "No choice is better than another. Clients have tastes: some will adore what you have, others will want the opposite. The more extreme a feature, the more clients notice it, for better or worse.", [
+      ...rows,
+      { label: "Next", primary: true, action: () => this.next() }
+    ]);
+  },
+
+  details() {
+    const d = this.d;
+    const small = (list, key) => ({ grid: list.map(v => sel(v, "", d[key] === v, () => { d[key] = v; this.details(); })) });
+    this.frame("The details", "Hair and eyes are yours to describe. A distinctive mark and your voice each carry a small perk.", [
+      { section: "Hair" }, small(HAIR, "hair"),
+      { section: "Eyes" }, small(EYES, "eyes"),
+      { section: "Distinctive mark" },
+      ...Object.keys(MARKS).map(k => sel(MARKS[k].label, MARKS[k].hint, d.mark === k, () => { d.mark = k; this.details(); })),
+      { section: "Voice" },
+      ...Object.keys(VOICES).map(k => sel(VOICES[k].label, VOICES[k].hint, d.voice === k, () => { d.voice = k; this.details(); })),
       { label: "Next", primary: true, action: () => this.next() }
     ]);
   },
@@ -2904,7 +3678,7 @@ const Creation = {
       ] });
     });
     list.push({ label: "Next", hint: left ? `${left} point${left === 1 ? "" : "s"} unspent` : "All points spent", primary: true, action: () => this.next() });
-    this.frame("Your attributes", `<b>${left}</b> of ${POINT_BUDGET} points left. Attributes start at 8 and go up to 15. Your path, specialty and past add bonuses on top — the sheet below shows final values.`, list);
+    this.frame("Your attributes", `<b>${left}</b> of ${POINT_BUDGET} points left. Attributes start at 8 and go up to 15. Your path, specialty and past add bonuses on top — the sheet below shows final values.\n\n<em>Courtship uses every attribute: Flatter (CHA), Wit (INT), Coy (DEX), Bold (STR) and Listen (WIS).</em>`, list);
   },
 
   background() {
@@ -2919,35 +3693,57 @@ const Creation = {
       Object.keys(MOTIVES).map(k => sel(MOTIVES[k].label, MOTIVES[k].hint, d.motive === k, () => { d.motive = k; this.next(); })));
   },
 
+  desires() {
+    const d = this.d;
+    const list = [{ section: `Specialties · up to ${MAX_SPECS}` }];
+    INDEX.kinks.forEach(k => {
+      const on = d.specs.includes(k.id), lim = d.limits.includes(k.id);
+      list.push(sel(k.name, `${SKILL_LABEL[k.skill]} · +2 to checks, +15% pay, requested more often`, on, () => { d.specs = on ? d.specs.filter(x => x !== k.id) : [...d.specs, k.id]; this.desires(); },
+        { disabled: !on && (lim || d.specs.length >= MAX_SPECS), reason: lim ? "It's one of your limits" : `${MAX_SPECS} specialties maximum` }));
+    });
+    list.push({ section: `Limits · up to ${MAX_LIMITS}, +1 trait point each` });
+    INDEX.kinks.forEach(k => {
+      const on = d.limits.includes(k.id), spec = d.specs.includes(k.id);
+      const canDrop = !on || traitPointsLeft(d) >= 1;
+      list.push(sel(k.name, "Refuse it without penalty; clients ask for it less", on, () => { d.limits = on ? d.limits.filter(x => x !== k.id) : [...d.limits, k.id]; this.desires(); },
+        { price: "+1", disabled: on ? !canDrop : (spec || d.limits.length >= MAX_LIMITS), reason: on ? "Free up a trait point first" : spec ? "It's one of your specialties" : `${MAX_LIMITS} limits maximum` }));
+    });
+    list.push({ label: "Next", primary: true, action: () => this.next() });
+    this.frame("Your desires", "Pick the kinks you excel at, and the ones you won't do. Specialties make you better and better paid; limits can be refused freely and earn trait points.", list, { noPreview: true });
+  },
+
   traits() {
     const d = this.d;
     const pts = traitPointsLeft(d);
     const nNeg = d.traits.filter(id => TRAITS.neg.some(t => t.id === id)).length;
     const nPos = d.traits.filter(id => TRAITS.pos.some(t => t.id === id)).length;
     const toggle = id => { d.traits = d.traits.includes(id) ? d.traits.filter(x => x !== id) : [...d.traits, id]; this.traits(); };
-    const list = [{ section: "Flaws · earn points (max 2)" }];
+    const list = [{ section: `Flaws · earn points (max ${MAX_FLAWS})` }];
     TRAITS.neg.forEach(t => {
       const on = d.traits.includes(t.id);
       list.push(sel(t.name, t.desc, on, () => toggle(t.id), {
-        price: `+${t.grant}`, disabled: on ? pts - t.grant < 0 : nNeg >= 2,
-        reason: on ? `${t.desc} · drop a strength or feat first` : `${t.desc} · two flaws maximum` }));
+        price: `+${t.grant}`, disabled: on ? pts - t.grant < 0 : nNeg >= MAX_FLAWS,
+        reason: on ? `${t.desc} · drop a strength or feat first` : `${t.desc} · ${MAX_FLAWS} flaws maximum` }));
     });
-    list.push({ section: "Strengths · spend points (max 2)" });
+    list.push({ section: `Strengths · spend points (max ${MAX_STRENGTHS})` });
     TRAITS.pos.forEach(t => {
       const on = d.traits.includes(t.id);
       list.push(sel(t.name, t.desc, on, () => toggle(t.id), {
-        price: `−${t.cost}`, disabled: !on && (nPos >= 2 || pts < t.cost),
-        reason: nPos >= 2 ? `${t.desc} · two strengths maximum` : `${t.desc} · need ${t.cost} points` }));
+        price: `−${t.cost}`, disabled: !on && (nPos >= MAX_STRENGTHS || pts < t.cost),
+        reason: nPos >= MAX_STRENGTHS ? `${t.desc} · ${MAX_STRENGTHS} strengths maximum` : `${t.desc} · need ${t.cost} points` }));
     });
-    list.push({ section: "Feat · pick one" });
+    list.push({ section: "Starting feat · pick one (more come at levels 4, 8 and 12)" });
+    const sheet = applyDraft(freshState(), { ...d, feat: null });
     Object.keys(FEATS).forEach(k => {
       const f = FEATS[k], on = d.feat === k;
       const avail = pts + (d.feat ? FEATS[d.feat].cost : 0);
-      list.push(sel(f.name, f.desc, on, () => { d.feat = on ? null : k; this.traits(); }, {
-        price: `−${f.cost}`, disabled: !on && avail < f.cost, reason: `${f.desc} · need ${f.cost} points` }));
+      const met = featReqMet(sheet, f);
+      const req = featReqText(f);
+      list.push(sel(f.name, f.desc + (req ? ` · requires ${req}` : ""), on, () => { d.feat = on ? null : k; this.traits(); }, {
+        price: `−${f.cost}`, disabled: !on && (!met || avail < f.cost), reason: !met ? `${f.desc} · requires ${req}` : `${f.desc} · need ${f.cost} points` }));
     });
     list.push({ label: "Next", hint: pts ? `${pts} point${pts === 1 ? "" : "s"} unspent` : "", primary: true, action: () => this.next() });
-    this.frame("Strengths & flaws", `Take flaws to earn points, then spend them on strengths and a feat. Tap a pick again to undo it.\n\n<b>${pts}</b> point${pts === 1 ? "" : "s"} available · ${nNeg}/2 flaws · ${nPos}/2 strengths`, list);
+    this.frame("Strengths & flaws", `Take flaws (and limits) to earn points, then spend them on strengths and a feat. Tap a pick again to undo it.\n\n<b>${pts}</b> point${pts === 1 ? "" : "s"} available · ${nNeg}/${MAX_FLAWS} flaws · ${nPos}/${MAX_STRENGTHS} strengths`, list);
   },
 
   review() {
@@ -2956,13 +3752,20 @@ const Creation = {
       if (!d[field]) { this.go(STEPS.indexOf(step)); return; }
     }
     if (!d.name) d.name = pick(NAMES[d.gender]);
+    if (traitPointsLeft(d) < 0) { d.feat = null; }
+    while (traitPointsLeft(d) < 0 && d.traits.some(id => TRAITS.pos.some(t => t.id === id))) {
+      const last = [...d.traits].reverse().find(id => TRAITS.pos.some(t => t.id === id));
+      d.traits = d.traits.filter(x => x !== last);
+    }
     this.editing = true;
     const traitNames = d.traits.map(id => (TRAITS.pos.find(t => t.id === id) || TRAITS.neg.find(t => t.id === id) || { name: id }).name);
     const body = [
-      `<b>${esc(d.name)}</b>, ${an(APPEARANCES[d.appearance].label)} ${APPEARANCES[d.appearance].label.toLowerCase()} ${buildWord(d.build, d.gender).toLowerCase()} ${pr("noun", d.gender)}.`,
-      `${classLabel(d.cls, d.gender)} · ${d.sub} · ${DIFFICULTIES[d.difficulty].label}`,
+      `<b>${esc(d.name)}</b>, ${an(APPEARANCES[d.appearance].label)} ${APPEARANCES[d.appearance].label.toLowerCase()} ${buildWord(d.build, d.gender).toLowerCase()} ${pr("noun", d.gender)} with ${d.hair.toLowerCase()} hair and ${d.eyes.toLowerCase()} eyes${d.mark !== "none" ? `, ${an(MARKS[d.mark].label)} ${MARKS[d.mark].label.toLowerCase()}` : ""} and a ${VOICES[d.voice].label.toLowerCase()} voice.`,
+      `Body: ${bodyParts(d.gender).map(k => `${BODY[k].label.toLowerCase()} ${((d.body || BODY_DEFAULT)[k] || BODY_DEFAULT[k]).toLowerCase()}`).join(" · ")}`,
+      `${classLabel(d.cls, d.gender)} · ${d.sub} · ${DIFFICULTIES[d.difficulty].label} · clientele: ${CLIENTELE[d.clientele].label.toLowerCase()}`,
       `Past: ${d.background}`,
       `Reason: ${MOTIVES[d.motive].label} — <em>${MOTIVES[d.motive].goal}</em>`,
+      `Specialties: ${d.specs.length ? d.specs.map(nameOf).join(", ") : "none"} · Limits: ${d.limits.length ? d.limits.map(nameOf).join(", ") : "none"}`,
       `Traits: ${traitNames.length ? traitNames.join(", ") : "none"} · Feat: ${d.feat ? FEATS[d.feat].name : "none"}`
     ].join("\n");
     const edits = STEPS.slice(0, -1).map((s, j) => ({ label: `Edit ${STEP_NAMES[s].toLowerCase()}`, quiet: true, action: () => { this.editing = true; this.go(j); } }));
@@ -2978,19 +3781,26 @@ const Creation = {
     const d = this.blank();
     const shuffle = a => [...a].sort(() => Math.random() - 0.5);
     d.gender = pick(["female", "male"]);
+    d.clientele = pick(Object.keys(CLIENTELE));
     d.name = pick(NAMES[d.gender]);
     d.appearance = pick(Object.keys(APPEARANCES));
     d.build = pick(Object.keys(BUILDS));
+    d.body = {}; Object.keys(BODY).forEach(k => { d.body[k] = pick(BODY[k].opts); });
+    d.hair = pick(HAIR); d.eyes = pick(EYES); d.mark = pick(Object.keys(MARKS)); d.voice = pick(Object.keys(VOICES));
     d.difficulty = pick(["novice", "experienced", "experienced", "veteran"]);
     d.cls = pick(Object.keys(CLASSES));
     d.sub = pick(SUBCLASSES[d.cls]).id;
     d.attrs = { ...CLASSES[d.cls].rec };
     d.background = pick(Object.keys(BACKGROUNDS));
     d.motive = pick(Object.keys(MOTIVES));
-    shuffle(TRAITS.neg).slice(0, Math.floor(Math.random() * 3)).forEach(t => d.traits.push(t.id));
+    const ks = shuffle(INDEX.kinks.map(k => k.id));
+    d.specs = ks.slice(0, Math.floor(Math.random() * 3));
+    d.limits = ks.slice(2, 2 + Math.floor(Math.random() * 2));
+    shuffle(TRAITS.neg).slice(0, Math.floor(Math.random() * 4)).forEach(t => d.traits.push(t.id));
     let nPos = 0;
-    shuffle(TRAITS.pos).forEach(t => { if (nPos < 2 && traitPointsLeft(d) >= t.cost && Math.random() < 0.7) { d.traits.push(t.id); nPos++; } });
-    const feats = Object.keys(FEATS).filter(k => FEATS[k].cost <= traitPointsLeft(d));
+    shuffle(TRAITS.pos).forEach(t => { if (nPos < MAX_STRENGTHS && traitPointsLeft(d) >= t.cost && Math.random() < 0.7) { d.traits.push(t.id); nPos++; } });
+    const sheet = applyDraft(freshState(), d);
+    const feats = Object.keys(FEATS).filter(k => FEATS[k].cost <= traitPointsLeft(d) && featReqMet(sheet, FEATS[k]));
     if (feats.length && Math.random() < 0.7) d.feat = pick(feats);
     return d;
   },
@@ -3006,7 +3816,7 @@ const Creation = {
     const c = state.character;
     Game.log(`${c.name} began a new life: ${classLabel(c.class)} (${c.subclass}), ${c.background}.`);
     Game.outcome("The streets await",
-      `You are <b>${esc(c.name)}</b>, ${an(c.appearance)} ${c.appearance} ${buildWord(c.build).toLowerCase()} ${pr("noun")} — ${an(classLabel(c.class))} ${classLabel(c.class)} of the ${c.subclass} school, once ${an(c.background)} ${c.background.toLowerCase()}.\n\n${MOTIVES[c.motivation].intro}\n\nYou arrive in Saltmere with ${state.coin} coin and a letter admitting you to the Courtesan's Guild as an Initiate. Earn Standing to face rank trials; each rank opens new cities and higher society. Perform badly and you'll be demoted, or cast out entirely.${state.ironman ? "\n\n<b>Ironman.</b> One life, no reloading." : ""}\n\n<em>Tip: size people up before you commit. The percentage on each choice is your chance of success.</em>`,
+      `You are <b>${esc(c.name)}</b>, ${an(c.appearance)} ${c.appearance} ${buildWord(c.build).toLowerCase()} ${pr("noun")} with ${String(c.hair).toLowerCase()} hair — ${an(classLabel(c.class))} ${classLabel(c.class)} of the ${c.subclass} school, once ${an(c.background)} ${c.background.toLowerCase()}.\n\n${MOTIVES[c.motivation].intro}\n\nYou arrive in Saltmere with ${state.coin} coin and a letter admitting you to the Courtesan's Guild as an Initiate. Earn Standing and satisfy clients to face rank trials; each rank opens new cities and higher society. Perform badly and you'll be demoted, or cast out entirely.${state.ironman ? "\n\n<b>Ironman.</b> One life, no reloading." : ""}\n\n<em>Tip: size people up before you commit. The percentage on each choice is your chance of success.</em>`,
       () => Game.menu(), { kicker: "Day 1", cta: "Begin" });
   }
 };

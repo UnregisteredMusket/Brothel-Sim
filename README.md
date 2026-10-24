@@ -18,9 +18,20 @@ All characters are adults. The game contains mature themes.
 - **Six cities,** each unlocked by rank: Saltmere (port), Ashford (wool town), Varenne (bankers), Lysmoor (cathedral city), Aurelle (royal court), and Valcourt (the capital and Guild Hall). Each has its own clientele, tastes, lodging costs, NPCs and quests. Travel costs coin and a night on the road.
 - **Ironman mode** (optional): one life, no reloading, and the save is deleted on a loss.
 
+## The contract board
+
+Every guildhouse has a board of postings, refreshed every two days. Take up to two contracts (three from Favored):
+
+- **Requests:** a named client wants one specific technique or kink: exhibitionism, voyeurism, roleplay and the rest. They pay more than walk-ins.
+- **Parties:** a pair or a trio, booked together.
+- **Charm a noble:** win a particular person over at the taproom, salon or court.
+- **Guild orders:** satisfy several clients with one technique, in any city.
+
+Fulfilled contracts pay a coin bonus and standing. Failed, abandoned or lapsed contracts cost standing. Postings lean toward techniques you've rarely used.
+
 ## Courtship
 
-Charm promising clients in taprooms; from Consort, attend salons; from Celebrated, attend court. Each courtship is a few exchanges: pick a tone (Flatter, Wit, Coy, Bold, Listen) against the other person's hidden personality. Read them first with Insight to learn what they love and hate. Win and you can accept a lucrative private invitation or seek their patronage; fail badly and the whole room sees the snub.
+Charm promising clients in taprooms; from Consort, attend salons; from Celebrated, attend court. Each courtship is a few exchanges: pick a tone (Flatter, Wit, Coy, Bold, Listen) against the other person's hidden personality. Read them first with Insight to learn what they love and hate. Win and you can accept a lucrative private invitation or seek their patronage; fail badly and the whole room sees the snub. Society tires of anyone who courts too often in one city: every extra courtship within two days makes the next one harder.
 
 ## Quests
 
@@ -36,11 +47,23 @@ Two side quests in every city, with no central plot. They use scripted dialogue 
 
 ## Encounters
 
-Clients have requests, likes, dislikes and a hidden temperament. Encounters run up to five rounds; every option shows its success chance. Varying techniques builds rhythm, repetition loses effect, and trouble can break out afterward.
+Clients have requests, likes, dislikes, a hidden temperament and often a taste in bodies. Encounters run up to five rounds; every option shows its success chance. A scene panel shows the technique, its type, your mastery, how undressed you both are and how close the client is.
+
+- **Group encounters:** pairs and trios. Switch your focus between them or bring them together.
+- **Undressing:** undress them slowly, hitch up her skirts or tug open his breeches, or undress for them. Clothes left on blunt every technique.
+- **Kinks:** switch into any kink you know mid-scene.
+- **Techniques and mastery:** every technique trains its skill and builds mastery (Practiced, Expert, Master). Higher skill unlocks advanced techniques. Clients react to an expert's touch and to a novice's fumbling.
+- **Training:** pay a tutor at any guildhouse, once per phase.
+
+Varying techniques builds rhythm, repetition loses effect, and trouble can break out afterward.
 
 ## Character creation
 
-Ten short steps with a live character sheet and a Back button on every step: name and gender, looks and build, difficulty, path and specialty, a 27-point attribute buy, background (each with a hook), motivation, strengths, flaws and a feat, then a review with Ironman toggle. Or roll a random life, or start in one tap as The Socialite, The Survivor or The Mistress of Rope.
+Thirteen short steps with a live character sheet and a Back button on every step: name, gender and clientele; looks and build; body; hair, eyes, a distinctive mark and voice; difficulty; path and specialty; a 27-point attribute buy; background; motivation; specialties and limits among the kinks; strengths, flaws and a feat; then a review with an Ironman toggle.
+
+**Body:** choose hair length, bust or chest, rear, thighs, grooming and, for men, endowment, from small to enormous. No choice is best. Clients with a taste for big or small adore one end and dislike the other, and extreme features are noticed more often, for better or worse. A match lowers the difficulty and raises the pay; a mismatch does the opposite, at encounters and in courtship.
+
+More feats arrive at levels 4, 8 and 12. Or roll a random life, or start in one tap as The Socialite, The Survivor or The Mistress of Rope.
 
 ## Writing your own narration
 
@@ -49,7 +72,7 @@ Encounter descriptions live in `narration.js`. To add your own lines without tou
 1. Copy `narration.custom.template.js` to `narration.custom.js` and fill in any lists. Your lines are added to the built-in ones, or replace them for a technique with `replace: true`.
 2. Open `checker.html` in a browser. It assembles every combination of lines and flags broken tokens, verb-agreement errors, wrong pronouns, capitalization and more.
 
-The header of `narration.js` documents the tokens (`{client}`, `{they}`, `{s}`, `{are}`…) and pose tags. Players can switch between full and brief narration in the Journal tab.
+Sections include technique lines, undressing, group scenes, reactions to your body and to your skill. The header of `narration.js` documents the tokens (`{client}`, `{they}`, `{s}`, `{are}`…) and pose tags. Players can switch between full and brief narration in the Journal tab.
 
 ## Building the Android app
 

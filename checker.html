@@ -25,7 +25,7 @@
 <script src="narration.custom.js"></script>
 <script>
 "use strict";
-const NAMES = { missionary: "Missionary", cowgirl: "Cowgirl", reverse_cowgirl: "Reverse Cowgirl", doggy_style: "Doggy Style", spooning: "Spooning", standing: "Standing", "69": "69", lotus: "Lotus", pretzel_dip: "Pretzel Dip", coital_alignment_techniq: "Coital Alignment", leapfrog: "Leapfrog", scissoring: "Scissoring", tabletop: "Tabletop", "side_by_side_face-to-fac": "Side by Side",
+const NAMES = { missionary: "Missionary", cowgirl: "Cowgirl", reverse_cowgirl: "Reverse Cowgirl", doggy_style: "Doggy Style", spooning: "Spooning", standing: "Standing", "69": "69", lotus: "Lotus", pretzel_dip: "Pretzel Dip", coital_alignment_techniq: "Coital Alignment", leapfrog: "Leapfrog", scissoring: "Scissoring", tabletop: "Tabletop", "side_by_side_face-to-fac": "Side by Side", slow_burn: "Slow Burn", the_throne: "The Throne", butterfly: "Butterfly", anal: "Anal", bridge: "The Bridge", tantric_union: "Tantric Union",
   bondage: "Bondage", spanking: "Spanking", roleplay: "Roleplay", sensory_deprivation: "Sensory Deprivation", temperature_play: "Temperature Play", dominance_and_submission: "Dominance & Submission", praise_kink: "Praise", dirty_talk: "Dirty Talk", voyeurism: "Voyeurism", exhibitionism: "Exhibitionism", foot_fetish: "Foot Fetish", impact_play: "Impact Play" };
 const PRON = {
   male: { they: "he", them: "him", their: "his", themself: "himself", s: "s", es: "es", are: "is" },
@@ -42,8 +42,9 @@ function merge(base, add) {
 }
 const cap = s => s.charAt(0).toUpperCase() + s.slice(1);
 const esc = s => String(s).replace(/[&<>]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;" }[c]));
+const GARB = { male: { garment: "shirt", lower: "breeches", lace: "doublet laces" }, female: { garment: "gown", lower: "skirts", lace: "bodice laces" } };
 function fill(line, c, move) {
-  const map = { name: "Isabeau", client: c.label, move, ...PRON[c.cg] };
+  const map = { name: "Isabeau", client: c.label, move, other: "Joan", ...GARB[c.cg], ...PRON[c.cg] };
   return line.replace(/\{(\w+)\}/g, (m, k) => {
     const lower = k.charAt(0).toLowerCase() + k.slice(1);
     const v = map[k] !== undefined ? map[k] : map[lower];
@@ -64,7 +65,7 @@ if (!window.NARRATION) {
   (function count(v) { if (Array.isArray(v)) customCount += v.length; else if (isObj(v)) Object.values(v).forEach(count); })(custom || {});
 
   const clients = [{ label: "Marlow", cg: "male" }, { label: "Madam Briar", cg: "female" }, { label: "your client", cg: "male" }, { label: "your client", cg: "female" }, { label: "the patron", cg: "female" }];
-  const VERBS = "are|were|have|do|want|love|take|leave|come|go|breathe|groan|moan|murmur|watch|kiss|obey|shiver|tremble|gasp|grip|push|let|jump|melt|make|blush|hope|wait|hover|tolerate|cling|crave|know|lie|sprawl|laugh|dress|smile|flinch|press|reach|catch|arch|beg|sigh|whisper|pull|hold|feel|look";
+  const VERBS = "are|were|have|do|want|love|take|leave|come|go|breathe|groan|moan|murmur|watch|kiss|obey|shiver|tremble|gasp|grip|push|let|jump|melt|make|blush|hope|wait|hover|tolerate|cling|crave|know|lie|sprawl|laugh|dress|smile|flinch|press|reach|catch|arch|beg|sigh|whisper|pull|hold|feel|look|adore|manage|keep|trace|run|rest|hide|pause|squeeze|wind|lay|give|glance|settle";
   const issues = {}; let total = 0; const samples = [];
   const bad = (k, s) => { issues[k] = issues[k] || { n: 0, ex: [] }; issues[k].n++; if (issues[k].ex.length < 4) issues[k].ex.push(s); };
   function check(s, c) {
@@ -108,6 +109,20 @@ if (!window.NARRATION) {
       for (const ctx of ["street", "brothel", "manager"]) for (const o of okFor((N.open || {})[ctx], tags)) for (const tp of ["", ...Object.values(N.temperament || {}).flat().map(T)]) for (const st of okFor(tech.start, tags)) check([o, tp, st].filter(Boolean).map(f).join(" "), c);
     }
     for (const o of ["success", "fail"]) for (const l of okFor((N.finish || {})[o], [])) check(fill(l, c, "Missionary"), c);
+    // high, undressing, group, body and mastery lines
+    const G = N.group || {}, U = N.undress || {}, B = N.body || {}, M = N.mastery || {};
+    for (const id of Object.keys(NAMES)) {
+      const tech = (N.techniques || {})[id]; if (!tech) continue;
+      const tags = tech.tags || [], f = l => fill(l, c, NAMES[id]);
+      for (const l of okFor(tech.high, tags)) for (const r of okFor(((N.reactions || {}).high || {}).success, tags)) check([l, r].map(f).join(" "), c);
+      for (const k of ["slow", "rush", "self"]) for (const o of ["success", "fail"]) for (const l of okFor((U[k] || {})[o], tags)) check(f(l), c);
+      for (const l of okFor(G.spill, tags)) check(f(l), c);
+      for (const o of ["success", "fail"]) for (const l of okFor((G.together || {})[o], tags)) check(f(l), c);
+      for (const l of okFor(M.master, tags).concat(okFor(M.novice, tags))) check(f(l), c);
+      for (const like of ["like", "dislike"]) for (const part of Object.keys(B[like] || {})) for (const l of okFor(B[like][part], tags)) check(f(l), c);
+    }
+    for (const l of okFor(G.open, [])) check(fill(l, c, "Missionary"), c);
+    for (const k of ["success", "partial", "fail"]) for (const l of okFor((G.finish || {})[k], [])) check(fill(l, c, "Missionary"), c);
   }
   const keys = Object.keys(issues);
   out.innerHTML = `

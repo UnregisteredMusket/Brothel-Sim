@@ -10,6 +10,8 @@
                  "Push harder" uses the technique's "focus" line on success.
                  Tease, Pull back and Command use the approaches lists.
                  Techniques without their own lines fall back to skills[skill].
+    2b. high     On a success once the client is close (high band), a technique's
+                 "high" line replaces its success line.
     3. pref      If the client loves the technique, an extra "liked" line follows.
                  If they dislike it, a "disliked" line replaces the success line.
     4. reaction  reactions[low|mid|high][success|fail], by how close they are.
@@ -34,6 +36,10 @@
     {s}       verb ending after {they}:  "{they} want{s}"  → "he wants"
     {es}      for -es verbs:             "{they} blush{es}" → "he blushes"
     {are}     "{they} {are}"             → "she is"
+    {move}    the current technique's name
+    {other}   in group encounters, another guest's name
+    {garment} {lower} {lace}   the client's clothes: gown / skirts / bodice laces,
+                               or shirt / breeches / doublet laces
   Tips: make {client} the subject when the verb ends in -es ("{client}
   watches"), and use a pronoun ({They}) for reaction lines, since the
   main line has usually just named the client.
@@ -76,7 +82,13 @@ window.NARRATION = {
       success: [
         "You wrap your legs around {client} and pull {them} closer, and {their} breath stutters against your neck.",
         "Face to face, you hold {client}'s gaze and set a slow, deep rhythm. {They} can't look away.",
-        "You meet every movement, fingers sliding down {client}'s back, and {they} groan{s} into your shoulder."
+        "You meet every movement, fingers sliding down {client}'s back, and {they} groan{s} into your shoulder.",
+        "You arch up to meet {client}, and the two of you find a long, rolling rhythm that rocks the old bed frame.",
+        "{Client} buries {their} face in your neck, breathing your name between kisses."
+      ],
+      high: [
+        "You hold {client} close as {they} tremble{s} against you, every movement slow and certain, drawing {them} to the edge.",
+        "Skin slick and breath ragged, {client} clings to you as the rhythm builds past bearing."
       ],
       fail: [
         "You bump noses, then elbows, and the moment fizzles into awkward laughter.",
@@ -90,7 +102,13 @@ window.NARRATION = {
       success: [
         "You rock your hips slowly, then faster, watching every flicker of pleasure cross {client}'s face.",
         "Hands braced on {client}'s chest, you set the pace, and {they} {are} only too glad to let you.",
-        "You lean down to kiss {client} without breaking rhythm, and {they} moan{s} into your mouth."
+        "You lean down to kiss {client} without breaking rhythm, and {they} moan{s} into your mouth.",
+        "You roll your hips in a slow figure of eight, and {client}'s hands tighten on your thighs.",
+        "You lean back, braced on {client}'s knees, and {they} can't take {their} eyes off you."
+      ],
+      high: [
+        "You ride {client} with long, deliberate strokes, holding {them} at the brink until {they} beg{s}.",
+        "{Client} arches beneath you, gasping, as you quicken toward the end."
       ],
       fail: [
         "You lose your balance and nearly topple off the bed. {Client} laughs, but it isn't the laugh you wanted.",
@@ -105,7 +123,13 @@ window.NARRATION = {
       success: [
         "You roll your hips in slow circles, and {client}'s hands find your waist.",
         "You glance back over your shoulder and catch {client} biting {their} lip.",
-        "{Client} traces the line of your spine as you move, and {their} breath grows ragged."
+        "{Client} traces the line of your spine as you move, and {their} breath grows ragged.",
+        "You sway forward and back, unhurried, and hear {client}'s breath catch behind you.",
+        "{Client}'s fingers trail up your back as you set a lazy, rocking pace."
+      ],
+      high: [
+        "You quicken, and behind you {client} gives up any hope of staying quiet.",
+        "{Client} grips your hips, breathless, as you carry {them} toward the edge."
       ],
       fail: [
         "With your back to {client}, you misjudge what {they} want{s}, and the rhythm falters.",
@@ -120,7 +144,13 @@ window.NARRATION = {
       success: [
         "{Client} grips your hips and finds an easy rhythm behind you, and you push back to meet it.",
         "You arch your back, and {client} lets out a low, rough sound.",
-        "The headboard knocks softly against the wall in time with you both."
+        "The headboard knocks softly against the wall in time with you both.",
+        "{Client}'s hands slide up your spine as you rock back together, slow and deep.",
+        "You glance back and catch {client} watching you with open hunger."
+      ],
+      high: [
+        "The rhythm grows urgent, the bed creaking in protest, and {client} groans your name.",
+        "{Client} holds your hips tight as the two of you race toward the finish."
       ],
       fail: [
         "The angle is wrong, and you both have to stop and shuffle on the mattress.",
@@ -135,7 +165,13 @@ window.NARRATION = {
       success: [
         "You move together in a slow, rocking sway, {client}'s breath warm against your neck.",
         "{Client} presses kisses along your shoulder as you rock back against {them}.",
-        "Unhurried and close, you lace your fingers with {client}'s and feel {them} shudder."
+        "Unhurried and close, you lace your fingers with {client}'s and feel {them} shudder.",
+        "{Client} murmurs into your hair as you rock together, lazy and warm.",
+        "You reach back to pull {client} closer, and {their} breath shivers against your ear."
+      ],
+      high: [
+        "Wrapped together, you move faster, and {client}'s arm tightens around your waist.",
+        "{Client} presses {their} lips to your shoulder to muffle a cry."
       ],
       fail: [
         "It's so warm and lazy that {client} nearly dozes off.",
@@ -149,7 +185,13 @@ window.NARRATION = {
       success: [
         "You hook a leg around {client}'s hip and hold on, the wall cool at your back.",
         "{Client} braces one hand beside your head, trembling with effort and want.",
-        "Plaster at your back and {client} against you, the urgency of it leaves you both gasping."
+        "Plaster at your back and {client} against you, the urgency of it leaves you both gasping.",
+        "You lock your arms around {client}'s neck, and {they} lift{s} you higher against the wall.",
+        "The wall at your back and {client} against you, every movement is sharp and close."
+      ],
+      high: [
+        "{Client} braces against the wall, trembling, as you both teeter on the edge.",
+        "You cling to {client}, legs locked, as the rhythm turns desperate."
       ],
       fail: [
         "Your foot slips on the floorboards, and you both stagger.",
@@ -163,7 +205,13 @@ window.NARRATION = {
       success: [
         "Giving and taking at once, you feel every sigh of {client}'s echoed in your own body.",
         "{Client}'s hands clutch at your thighs as you both lose yourselves in it.",
-        "You find a shared rhythm, and {client}'s muffled sounds tell you everything."
+        "You find a shared rhythm, and {client}'s muffled sounds tell you everything.",
+        "You lose track of who is giving and who is taking, and neither of you minds.",
+        "{Client}'s soft, muffled sounds spur you on."
+      ],
+      high: [
+        "{Client} shudders against you, unable to keep any rhythm of {their} own.",
+        "You feel {client} tremble and redouble your attention."
       ],
       fail: [
         "It's harder to concentrate than it looks, and you both lose the thread.",
@@ -177,7 +225,13 @@ window.NARRATION = {
       success: [
         "You rock slowly in {client}'s lap, breathing in time, closer than close.",
         "{Client} holds you tight, and you feel {their} heart racing against yours.",
-        "Foreheads together, you move as one, and {client} whispers your name."
+        "Foreheads together, you move as one, and {client} whispers your name.",
+        "You wrap yourself around {client} and sway, slow as a tide.",
+        "Forehead to forehead, you share one breath between you."
+      ],
+      high: [
+        "{Client} holds you so tightly you can feel every shiver run through {them}.",
+        "You rock faster in {client}'s lap, and {they} whisper{s} your name like a prayer."
       ],
       fail: [
         "Your legs cramp, and you have to shift out of {client}'s lap.",
@@ -191,7 +245,13 @@ window.NARRATION = {
       success: [
         "The angle is unusual and wonderful, and {client} groans in surprised delight.",
         "Limbs tangled, you find a slow rhythm, and {client} grips the sheets.",
-        "{Client} laughs breathlessly. {They} never knew it could feel like this."
+        "{Client} laughs breathlessly. {They} never knew it could feel like this.",
+        "The tangled angle sends a shiver through {client} that you feel in your own bones.",
+        "You shift your hips a fraction, and {client} gasps aloud."
+      ],
+      high: [
+        "{Client} grips the sheets with both hands, lost entirely.",
+        "Limbs tangled, you push {client} right to the brink."
       ],
       fail: [
         "The tangle becomes a knot, and you both have to laugh your way out of it.",
@@ -205,7 +265,13 @@ window.NARRATION = {
       success: [
         "Slow, grinding, close: you barely move, and {client} comes undone anyway.",
         "You press together and rock instead of thrust, and {client} gasps at how much that matters.",
-        "The tiny, deliberate movements build and build, and {client}'s breath stutters."
+        "The tiny, deliberate movements build and build, and {client}'s breath stutters.",
+        "You keep the pressure steady and the pace slow, and {client}'s breathing turns ragged.",
+        "Every small, grinding movement draws another soft sound from {client}."
+      ],
+      high: [
+        "{Client} clutches at your back, trembling, as the slow grind builds to something unbearable.",
+        "You barely move at all, and still {client} is undone."
       ],
       fail: [
         "The movements are too subtle, and {client} isn't sure anything is happening.",
@@ -220,7 +286,13 @@ window.NARRATION = {
       success: [
         "Cheek against the sheets, you arch and push back, and {client} lets out a low groan.",
         "{Client} finds the angle at once, and the sounds {they} make{s} are worth everything.",
-        "You clutch the pillow as {client} finds a rhythm behind you."
+        "You clutch the pillow as {client} finds a rhythm behind you.",
+        "You push back against {client}, and {they} moan{s} low in {their} throat.",
+        "Cheek on the pillow, you smile at the sounds {client} is making."
+      ],
+      high: [
+        "{Client} loses all rhythm behind you, gasping, holding on.",
+        "You grip the pillow as {client} surges toward the end."
       ],
       fail: [
         "Your elbows ache, and the pillow keeps slipping.",
@@ -234,7 +306,13 @@ window.NARRATION = {
       success: [
         "You rock against each other, hips rolling, and {client} lets out a long, shaky breath.",
         "Legs entwined, you find a grinding rhythm that has {client} clutching at the sheets.",
-        "Slick skin and steady pressure: {client}'s head tips back as you move together."
+        "Slick skin and steady pressure: {client}'s head tips back as you move together.",
+        "You rock together in a steady, grinding rhythm, breath matching breath.",
+        "{Client} hooks a leg tighter around yours, pulling you closer."
+      ],
+      high: [
+        "You grind harder, and {client} shudders, crying out softly.",
+        "{Client} clutches at your knee, trembling on the brink."
       ],
       fail: [
         "The angle won't hold, and you keep slipping apart.",
@@ -248,7 +326,13 @@ window.NARRATION = {
       success: [
         "The table creaks under you as {client} leans in, and a cup rolls off onto the floor.",
         "You lock your ankles behind {client} and draw {them} close, and {they} moan{s} into your hair.",
-        "Leaning back on your hands, you watch {client} lose {themself} completely."
+        "Leaning back on your hands, you watch {client} lose {themself} completely.",
+        "{Client} kisses you hard, and the table rocks beneath you both.",
+        "You pull {client} close by the collar, and {they} laugh{s} breathlessly against your mouth."
+      ],
+      high: [
+        "The table thumps against the wall in time with you, and {client} doesn't care who hears.",
+        "{Client} braces on the table's edge, trembling, nearly undone."
       ],
       fail: [
         "The table wobbles alarmingly, and you both freeze.",
@@ -262,7 +346,13 @@ window.NARRATION = {
       success: [
         "Side by side and nose to nose, you move together, slow and close.",
         "You trade lazy kisses as you rock together, and {client} sighs against your lips.",
-        "{Client}'s hand slides down your back, pulling you closer with every movement."
+        "{Client}'s hand slides down your back, pulling you closer with every movement.",
+        "Lazy and close, you trade slow kisses between slow movements.",
+        "{Client} traces the curve of your hip as you rock together."
+      ],
+      high: [
+        "{Client} pulls you tight, breathing hard against your lips.",
+        "Face to face, you watch {client} come apart."
       ],
       fail: [
         "Your hip goes numb, and you have to roll over.",
@@ -272,6 +362,87 @@ window.NARRATION = {
       focus: ["You pull {client} tight against you and quicken, and {they} gasp{s} against your lips."]
     },
 
+    /* ---------- Advanced techniques (unlocked by skill) ---------- */
+    butterfly: {
+      start: ["You lie back at the very edge of the bed and lift your hips, and {client} steps in close to hold you there."],
+      success: [
+        "{Client} holds your hips raised, and every slow movement lands exactly where it should.",
+        "You hook your heels over {client}'s shoulders, and {they} groan{s} at the angle.",
+        "Suspended between the bed and {client}'s hands, you sway together in a slow rhythm.",
+        "{Client} can't look away from you, laid out and arching beneath {them}."
+      ],
+      fail: ["Your hips slip from {client}'s grip, and you both have to start again.", "The edge of the bed is narrower than you thought."],
+      repeat: ["The same raised angle again, and {client}'s arms are tiring."],
+      focus: ["You arch higher and pull {client} in hard, and {they} cry{es} out."],
+      high: ["{Client} trembles, holding you up as the rhythm carries you both to the brink.", "You arch against {client}'s hands, and {they} gasp{s}, nearly undone."]
+    },
+    the_throne: {
+      start: ["You settle {client} in the high-backed chair like royalty and kneel before {them}."],
+      success: [
+        "Enthroned and helpless, {client} grips the carved arms of the chair.",
+        "You take your time, and {client}'s head tips back against the chair.",
+        "{Client} runs trembling fingers through your hair.",
+        "You glance up, and the look on {client}'s face is worth every coin."
+      ],
+      fail: ["The chair creaks and wobbles, and the spell breaks.", "You lose the thread, and {client} shifts restlessly on {their} throne."],
+      repeat: ["The same devotion again, and {client}'s attention wanders."],
+      focus: ["You give {client} your whole attention, and {they} clutch{es} the chair for dear life."],
+      high: ["{Client} grips the chair until {their} knuckles whiten, gasping.", "On {their} throne, {client} is undone and utterly at your mercy."]
+    },
+    slow_burn: {
+      start: ["You warm scented oil between your palms and begin a long, slow massage."],
+      success: [
+        "Your hands work the tension from {client}'s shoulders, then wander lower.",
+        "{Client} melts into the sheets under your patient touch.",
+        "Every slow stroke builds something {client} can't name.",
+        "You draw lazy patterns across {client}'s skin, and {they} sigh{s} deeply."
+      ],
+      fail: ["The oil has gone cold, and {client} shivers for the wrong reasons.", "You press a knot too hard, and {client} winces."],
+      repeat: ["The same slow strokes again, and {client} is drifting toward sleep."],
+      focus: ["You stop being patient, and {client} gasps at the change."],
+      high: ["After so long a burn, {client} is trembling at the slightest touch.", "{Client} arches into your hands, begging you to finish what you started."]
+    },
+    anal: {
+      tags: ["away"],
+      start: ["You take your time preparing, unhurried and careful, until {client} is ready."],
+      success: [
+        "Slow, careful and close, you find a rhythm that leaves {client} breathless.",
+        "{Client} sighs and relaxes into it, trusting you completely.",
+        "You move with patience, and {client} murmurs for more.",
+        "{Client}'s fingers knot in the sheets as you ease into a steady pace."
+      ],
+      fail: ["You rush it, and {client} tenses. You stop and start again more gently.", "{Client} isn't ready, and you ease off at once."],
+      repeat: ["The same slow rhythm, and {client} wants a change."],
+      focus: ["You quicken carefully, and {client} cries out into the pillow."],
+      high: ["{Client} trembles, pressing back toward you, close to the edge.", "Slow and deep, you carry {client} right to the brink."]
+    },
+    bridge: {
+      start: ["You arch your back into a high bridge, and {client} stares in astonishment before joining you."],
+      success: [
+        "It takes strength and balance, and {client} is breathless at the sight of you.",
+        "Arched and taut, you move in long, deliberate waves.",
+        "{Client} holds your waist, marveling at what your body can do.",
+        "Every muscle trembles, and so does {client}."
+      ],
+      fail: ["Your arms give way, and you collapse in a heap of sheets.", "You can't hold the arch, and the moment tumbles."],
+      repeat: ["Impressive, but {client} has seen it now."],
+      focus: ["You hold the arch and push harder, and {client} gasps aloud."],
+      high: ["You hold the bridge through shaking arms, and {client} is undone beneath you.", "{Client} clings to your waist, trembling on the edge."]
+    },
+    tantric_union: {
+      start: ["You sit facing {client}, legs entwined, and slow your breathing until it matches {their} own."],
+      success: [
+        "Breath for breath, you move so slowly it hardly seems like moving at all.",
+        "You hold {client}'s gaze, and the world narrows to the two of you.",
+        "Every small movement sends a long, rolling shiver through {client}.",
+        "Time stretches. {Client} has never felt anything like this."
+      ],
+      fail: ["Your breathing falls out of step, and the stillness turns awkward.", "{Client} can't keep still, and the moment scatters."],
+      repeat: ["Even this can grow familiar, and {client}'s mind wanders."],
+      focus: ["You deepen every breath and every movement, and {client} shudders."],
+      high: ["The stillness breaks like a wave, and {client} trembles in your arms.", "Wrapped together, breathing as one, you carry {client} over the edge of something vast."]
+    },
+
     /* ---------- Kinks ---------- */
     bondage: {
       tags: ["bound"],
@@ -279,7 +450,13 @@ window.NARRATION = {
       success: [
         "You tighten the last knot and trail a fingertip down {client}'s bound arms. {They} shiver{s}.",
         "Bound and helpless, {client} strains against the silk — not to escape, but for more.",
-        "You take your time with {client}, who can do nothing but feel it."
+        "You take your time with {client}, who can do nothing but feel it.",
+        "You circle {client} slowly, letting {them} feel your eyes on every inch.",
+        "A fingertip along a bound wrist makes {client} shiver."
+      ],
+      high: [
+        "Bound and helpless, {client} strains toward your touch, begging softly.",
+        "You take {client} to the edge and hold {them} there, bound and trembling."
       ],
       fail: [
         "A knot slips loose, and the spell breaks.",
@@ -293,7 +470,13 @@ window.NARRATION = {
       success: [
         "The first crisp smack makes {client} gasp. The second makes {them} beg.",
         "You alternate sharp swats with gentle strokes, and {client} squirms in delight.",
-        "{Client} pushes back into your hand, wanting more."
+        "{Client} pushes back into your hand, wanting more.",
+        "You keep a steady rhythm, and {client}'s skin warms beneath your palm.",
+        "{Client} gasps at each swat and asks for another."
+      ],
+      high: [
+        "{Client} squirms across your lap, flushed and pleading.",
+        "With every stroke {client} comes closer to falling apart."
       ],
       fail: [
         "Too hard, too soon. {Client} yelps, and you ease off at once.",
@@ -307,7 +490,13 @@ window.NARRATION = {
       success: [
         "You stay perfectly in character, and {client} falls deeper into the fantasy.",
         "You improvise a line that makes {client} flush scarlet with delight.",
-        "The game takes on a life of its own, and {client} is utterly lost in it."
+        "The game takes on a life of its own, and {client} is utterly lost in it.",
+        "You lean into the fantasy, and {client} follows you deeper into it.",
+        "{Client} plays along breathlessly, eyes bright."
+      ],
+      high: [
+        "The fantasy reaches its peak, and {client} is utterly lost in it.",
+        "{Client} forgets where the game ends and the night begins."
       ],
       fail: [
         "You forget your part, and {client}'s illusion cracks.",
@@ -321,7 +510,13 @@ window.NARRATION = {
       success: [
         "Blindfolded, {client} gasps at every unexpected touch.",
         "You let the silence stretch, then brush your lips across {client}'s neck. {They} jump{s}, then melt{s}.",
-        "Every sensation is sharper in the dark, and {client} trembles at the lightest touch."
+        "Every sensation is sharper in the dark, and {client} trembles at the lightest touch.",
+        "You let a long silence fall, and {client} quivers, waiting.",
+        "Each touch lands where {client} least expects it."
+      ],
+      high: [
+        "Blind and breathless, {client} trembles at your lightest touch.",
+        "{Client} gasps at every brush of your fingers, utterly undone."
       ],
       fail: [
         "{Client} grows uneasy in the dark and tugs at the blindfold.",
@@ -335,7 +530,13 @@ window.NARRATION = {
       success: [
         "A drop of warm wax, then the chill of the cup: {client} gasps at the contrast.",
         "You trace a cold fingertip along a warm path, and {client} shivers all over.",
-        "{Client} never knows which sensation is coming next, and {they} love{s} it."
+        "{Client} never knows which sensation is coming next, and {they} love{s} it.",
+        "Warm breath follows cold wine along {client}'s collarbone.",
+        "{Client} shivers and flushes in the same moment."
+      ],
+      high: [
+        "Hot and cold, hot and cold: {client} can't stop trembling.",
+        "{Client} arches toward the next sensation, begging for it."
       ],
       fail: [
         "The wax is too hot, and {client} flinches. You stop and soothe it at once.",
@@ -349,7 +550,13 @@ window.NARRATION = {
       success: [
         "You give an order, and {client} obeys with a shiver of pleasure.",
         "{Client} kneels at your feet, waiting on your every word.",
-        "You decide when {client} may touch you, and when {they} may not. {They} love{s} every rule."
+        "You decide when {client} may touch you, and when {they} may not. {They} love{s} every rule.",
+        "You tilt {client}'s chin up with one finger, and {they} obey{s} without a word.",
+        "{Client} waits on your command, breath shallow."
+      ],
+      high: [
+        "\"Now,\" you say, and {client} falls apart at your word.",
+        "{Client} trembles at your feet, wanting nothing but your next command."
       ],
       fail: [
         "{Client} breaks a rule, and you can't decide what to do about it.",
@@ -363,7 +570,13 @@ window.NARRATION = {
       success: [
         "\"Such a good one,\" you murmur, and {client} glows.",
         "You praise every little thing {client} does, and {they} blush{es} to the roots of {their} hair.",
-        "{Client} hangs on your every word of approval."
+        "{Client} hangs on your every word of approval.",
+        "\"Perfect,\" you whisper, and {client} melts.",
+        "Every word of praise makes {client} flush deeper."
+      ],
+      high: [
+        "You tell {client} exactly how wonderful {they} {are}, and {they} come{s} apart.",
+        "{Client} hangs on your voice, trembling with every compliment."
       ],
       fail: [
         "The praise sounds rehearsed, and {client} hears it.",
@@ -377,7 +590,13 @@ window.NARRATION = {
       success: [
         "You whisper what you mean to do next, and {client} groans at the thought.",
         "Your words paint pictures that make {client} flush and squirm.",
-        "Every whispered promise lands, and {client} is nearly undone by words alone."
+        "Every whispered promise lands, and {client} is nearly undone by words alone.",
+        "You murmur a promise in {client}'s ear, and {they} shiver{s}.",
+        "Your low voice paints a picture that leaves {client} breathless."
+      ],
+      high: [
+        "You whisper exactly what comes next, and {client} can't hold back any longer.",
+        "{Client} is undone by your words alone."
       ],
       fail: [
         "You trip over a word and ruin the mood.",
@@ -392,7 +611,13 @@ window.NARRATION = {
       success: [
         "You take your time undressing, letting {client} drink in every inch.",
         "{Client} grips the arms of the chair, forbidden to touch and aching to.",
-        "You put on a show by candlelight, and {client} can't tear {their} eyes away."
+        "You put on a show by candlelight, and {client} can't tear {their} eyes away.",
+        "You move slowly in the candlelight, and {client} forgets to breathe.",
+        "{Client} leans forward in the chair, rapt."
+      ],
+      high: [
+        "{Client} grips the chair, trembling, forbidden to touch and nearly undone by it.",
+        "You hold {client}'s gaze until {they} can't bear another moment."
       ],
       fail: [
         "You catch your sleeve on a hook, and the show turns comic.",
@@ -406,7 +631,13 @@ window.NARRATION = {
       success: [
         "Footsteps pass in the hall outside, and {client} shivers with the thrill of it.",
         "The risk of being seen makes every touch electric.",
-        "{Client} gasps at the thought of who might be watching."
+        "{Client} gasps at the thought of who might be watching.",
+        "Voices drift up from the street, and {client} shivers with the thrill of it.",
+        "The open shutter makes every sound feel dangerous."
+      ],
+      high: [
+        "{Client} bites back a cry, thrilled and terrified at who might hear.",
+        "The risk of being seen pushes {client} right to the edge."
       ],
       fail: [
         "A real face appears at the shutter, and the mood shatters.",
@@ -420,7 +651,13 @@ window.NARRATION = {
       success: [
         "You trace your bare foot along {client}'s thigh, and {they} let{s} out a shaky breath.",
         "{Client} cradles your foot like something precious.",
-        "You tease {client} with a pointed toe, and {they} groan{s} with longing."
+        "You tease {client} with a pointed toe, and {they} groan{s} with longing.",
+        "You stretch languidly, and {client} follows every movement of your ankle.",
+        "{Client} presses a kiss to the arch of your foot."
+      ],
+      high: [
+        "You tease {client} until {they} {are} trembling with want.",
+        "{Client} is breathless at your feet, utterly devoted."
       ],
       fail: [
         "You press a little too hard, and {client} winces.",
@@ -434,7 +671,13 @@ window.NARRATION = {
       success: [
         "The strap lands crisply, and {client} lets out a sharp, delighted gasp.",
         "You find a steady rhythm with the strap, and {client} sinks into it.",
-        "Each measured stroke leaves {client} trembling and wanting the next."
+        "Each measured stroke leaves {client} trembling and wanting the next.",
+        "The strap falls in a slow, steady rhythm, and {client} sinks into it.",
+        "{Client} braces for each stroke, then sighs into it."
+      ],
+      high: [
+        "Each stroke draws a sharper gasp from {client}, closer and closer to the edge.",
+        "{Client} trembles beneath the strap, begging for the next."
       ],
       fail: [
         "A stroke lands wrong, and you stop to check on {client} at once.",
@@ -514,9 +757,99 @@ window.NARRATION = {
     }
   },
 
+  /* Undressing. Tokens {garment}, {lower}, {lace} match the client's clothes
+     (gown, skirts, bodice laces / shirt, breeches, doublet laces). */
+  undress: {
+    slow: {
+      success: [
+        "You take your time with {client}'s {lace}, one tie at a time, and {they} shiver{s} with anticipation.",
+        "You ease {client}'s {garment} from {their} shoulders, kissing each inch you uncover.",
+        "Slowly, deliberately, you peel away {client}'s clothes until nothing is left between you."
+      ],
+      fail: ["A knot in {client}'s {lace} defeats your fingers, and the moment fumbles.", "You tug at the wrong tie, and {client} laughs nervously."]
+    },
+    rush: {
+      success: [
+        "Too impatient to wait, you push {client}'s {lower} out of the way with a wicked grin, leaving {them} bare to you.",
+        "You haul {client}'s {lower} aside in one motion, and {they} gasp{s} at your hurry.",
+        "No time for laces: you shove the fabric aside, and {client} doesn't object in the least."
+      ],
+      fail: ["The fabric snags and bunches, and you both have to stop and untangle it.", "You yank too hard, and something tears. {Client} isn't pleased."]
+    },
+    self: {
+      success: [
+        "You let your clothes fall away one piece at a time, and {client} can't look anywhere else.",
+        "You step out of your clothes and stand unhurried in the candlelight while {client} stares.",
+        "You undress for {client} slowly, savoring every second of {their} attention."
+      ],
+      fail: ["A stubborn lace spoils the show.", "You stumble stepping out of your clothes, and the mood wobbles."]
+    }
+  },
+
+  /* Group encounters. {client} is the partner you're focused on; {other} is another guest. */
+  group: {
+    open: [
+      "{Client} and {other} arrive together, sharing a look that says they've planned this.",
+      "Two of them and one of you. {Client} grins, {other} blushes, and you lock the door behind them.",
+      "You lead {client} and {other} upstairs, one hand in each of theirs."
+    ],
+    spill: [
+      "{Other} watches, breath quickening.",
+      "{Other} reaches for you too, unwilling to be left out.",
+      "{Other} presses close, kissing your shoulder.",
+      "Across the bed, {other} sighs at the sight."
+    ],
+    together: {
+      success: [
+        "You draw {client} and {other} together and give them both your attention at once.",
+        "Hands, lips and laughter: for a moment, you all move as one.",
+        "You weave between them, and both {client} and {other} sigh your name."
+      ],
+      fail: ["You try to please everyone at once and end up pleasing no one.", "Someone's elbow, someone's knee, and the moment tangles."]
+    },
+    finish: {
+      success: ["The room is warm and tangled and quiet at last, everyone smiling.", "They leave arm in arm, glowing, promising to come back together."],
+      partial: ["Some of them leave glowing; the rest, less so.", "Not everyone got what they came for, and everyone knows it."],
+      fail: ["They dress in awkward silence, avoiding each other's eyes.", "It was more tangle than triumph. They leave unsatisfied."]
+    }
+  },
+
   /* liked:    added after a technique's success line when the client loves it.
      disliked: REPLACES the success line when the client dislikes the technique,
                so a lukewarm reaction never follows a glowing one. Must stand alone. */
+  /* Reactions to your body, when a client has a taste for one part of it (Body step in creation).
+     like: you're what they wanted. dislike: you're the opposite. Keyed by body part, with general as a fallback.
+     Shown once when the encounter opens, and again when you undress for them. */
+  body: {
+    like: {
+      general: ["{Client} looks you over slowly, and plainly likes what {they} see{s}.", "{They} can't quite hide how pleased {they} {are} with you."],
+      hairLen: ["{Client} winds a lock of your hair around {their} fingers, delighted.", "{They} keep{s} reaching to touch your hair, as if {they} can't help it."],
+      bust: ["{Client}'s gaze keeps drifting to your chest, and {they} make{s} no effort to hide it.", "{They} trace{s} the curve of your bust with a look of open admiration."],
+      chest: ["{Client} lays a palm flat on your chest and leaves it there, admiring.", "{They} run{s} an appreciative hand across your chest."],
+      rear: ["{Client}'s hand finds the curve of your backside and lingers there, very pleased.", "{They} watch{es} you walk across the room with undisguised appreciation."],
+      thighs: ["{Client} rests a hand on your thigh and squeezes, approving.", "{Their} eyes trail down the length of your legs and stay there."],
+      grooming: ["{Client} trails an approving hand down past your navel and smiles.", "{They} murmur{s} that you are exactly how {they} like."],
+      endowment: ["When your clothes fall away, {client}'s breath catches, and a slow, delighted grin follows.", "{Client} looks down, then back up at you, eyes bright with anticipation."]
+    },
+    dislike: {
+      general: ["{Client} looks you over and seems, for a moment, faintly disappointed.", "{They} hide{s} a flicker of disappointment, but you see it."],
+      hairLen: ["{Client} glances at your hair and {their} smile cools a degree."],
+      bust: ["{Client}'s glance settles on your chest a moment, and something in {their} expression dims.", "{They} look{s} at your figure as if comparing it to someone else's."],
+      chest: ["{Client} looks at your chest and you can tell it isn't what {they} pictured."],
+      rear: ["{Client} gives your figure an appraising look that falls just short of approval."],
+      thighs: ["{Client}'s eyes pass over your legs without lingering."],
+      grooming: ["{Client} pauses, a little surprised, and you sense it isn't how {they} prefer."],
+      endowment: ["{Client} looks you over once your clothes are off and hesitates, recalculating.", "There's a beat of uncertainty on {client}'s face as the last layer falls away."]
+    }
+  },
+
+  /* Reactions to your skill with a technique. master: success with Expert or Master mastery.
+     novice: a failure with a technique you have little experience in. */
+  mastery: {
+    master: ["{Client} gasps that {they} {are} in the hands of an expert.", "{They} can tell you have done this a hundred times, and {they} adore{s} you for it.", "{Client} breaks off, breathless, to ask where you learned that.", "Your practiced ease leaves {client} speechless."],
+    novice: ["Your inexperience shows, and {client} notices.", "{Client} gently corrects you, and the moment loses some of its heat.", "You fumble, and {they} {are} too polite to say anything."]
+  },
+
   liked: ["It's exactly what {they} hoped for.", "{Their} whole body answers you.", "{They} murmur{s} your name.", "\"Yes, that,\" {they} breathe{s}."],
   disliked: [
     "{Client} goes along with it, but it's clearly not {their} favorite.",
@@ -527,15 +860,15 @@ window.NARRATION = {
   /* How the client is doing after the turn, by satisfaction band and outcome. */
   reactions: {
     low: {
-      success: ["It's a good start.", "{They} {are} beginning to relax into it.", "{They} let{s} out a small, pleased sigh."],
+      success: ["It's a good start.", "{They} smile{s} into the moment.", "{They} {are} beginning to relax into it.", "{They} let{s} out a small, pleased sigh."],
       fail: ["{They} {are} still waiting to be won over.", "{Their} breathing hasn't changed."]
     },
     mid: {
-      success: ["{Their} breath comes faster now.", "A flush is rising on {their} skin.", { t: "{Their} hands have stopped being polite.", not: ["bound", "notouch"] }, "{They} {are} well past pretending to be composed."],
+      success: ["{Their} breath comes faster now.", "{They} {are} flushed and wide-eyed.", "A flush is rising on {their} skin.", { t: "{Their} hands have stopped being polite.", not: ["bound", "notouch"] }, "{They} {are} well past pretending to be composed."],
       fail: ["{They} {are} still warm, but the heat is fading.", "{They} wait{s} for you to find your way back."]
     },
     high: {
-      success: ["{They} {are} trembling on the edge.", { t: "{They} {are} gasping now, clinging to you.", not: ["bound", "notouch"] }, "{They} won't last much longer.", "Every breath {they} take{s} is a plea."],
+      success: ["{They} {are} trembling on the edge.", "{They} can barely breathe.", { t: "{They} {are} gasping now, clinging to you.", not: ["bound", "notouch"] }, "{They} won't last much longer.", "Every breath {they} take{s} is a plea."],
       fail: ["{They} {are} still close, but the moment wobbles.", "{They} hover{s} on the edge, waiting."]
     }
   },
