@@ -8,7 +8,22 @@ All characters are adults. The game contains mature themes.
 
 Open `index.html` in any modern browser. No build step, no dependencies.
 
-To host it, enable GitHub Pages for this repository (Settings → Pages → deploy from `main`, root folder). The game will then be playable at `https://<user>.github.io/brothel-sim/`.
+To host it, enable GitHub Pages for this repository (Settings → Pages → deploy from `main`, root folder). The game will then be playable at `https://unregisteredmusket.github.io/Brothel-Sim/`.
+
+## Character creation
+
+Ten short steps with a live character sheet that highlights what each choice changes, and a Back button on every step:
+
+- **Name and gender** (female or male), with a random-name option.
+- **Looks and build.** Appearance sets your pay; build gives a small perk.
+- **Difficulty**, **path** (class) and **specialty**.
+- **Attributes** with a 27-point buy and a recommended spread for each path.
+- **Past.** Each background gives a bonus and a hook: an old acquaintance or a discount.
+- **Reason.** Your motivation gives a perk, a goal shown in the House tab, and an epilogue line in your ending.
+- **Strengths, flaws and a feat**, all toggleable.
+- **Review** with an edit button for every step.
+
+Or skip it: roll a random life, or start in one tap as The Socialite, The Survivor or The Mistress of Rope.
 
 ## How it plays
 
