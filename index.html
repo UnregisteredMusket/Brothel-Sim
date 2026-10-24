@@ -890,9 +890,9 @@ const UI = {
    ========================================================= */
 const NPC_GENDER = { marlow: "male", edric: "male", briar: "female" };
 const CLIENT_PRONOUNS = {
-  male: { they: "he", them: "him", their: "his", themself: "himself", s: "s", are: "is" },
-  female: { they: "she", them: "her", their: "her", themself: "herself", s: "s", are: "is" },
-  they: { they: "they", them: "them", their: "their", themself: "themself", s: "", are: "are" }
+  male: { they: "he", them: "him", their: "his", themself: "himself", s: "s", es: "es", are: "is" },
+  female: { they: "she", them: "her", their: "her", themself: "herself", s: "s", es: "es", are: "is" },
+  they: { they: "they", them: "them", their: "their", themself: "themself", s: "", es: "", are: "are" }
 };
 const Narrator = {
   used: {},
@@ -920,7 +920,15 @@ const Narrator = {
       return k !== lower ? cap(String(v)) : String(v);
     });
   },
-  line(key, list, e) { return this.fill(this.pick(key, list), e); },
+  // Lines may be strings or { t, not: [tags] }; skip lines that clash with the current pose's tags.
+  line(key, list, e) {
+    if (!Array.isArray(list)) return "";
+    const tech = ((this.data() || {}).techniques || {})[(e.curMove || e.item).id] || {};
+    const tags = tech.tags || [];
+    const ok = list.filter(x => typeof x === "string" || !(x.not || []).some(t => tags.includes(t)));
+    const chosen = this.pick(key + "|" + tags.join(","), ok);
+    return this.fill(chosen && typeof chosen === "object" ? chosen.t : chosen, e);
+  },
   band(e) {
     const pct = 1 - Math.max(0, e.climax) / e.climaxMax;
     return pct < 0.3 ? "low" : pct < 0.7 ? "mid" : "high";
@@ -941,15 +949,20 @@ const Narrator = {
     const sk = (N.skills || {})[o.pos.skill] || {};
     const def = (N.skills || {})._default || {};
     if ((o.kind === "work" || o.kind === "focus") && o.switched && tech.start) parts.push(this.line("start:" + o.pos.id, tech.start, e));
+    const ap = (N.approaches || {})[o.kind] || {};
+    const own = () => this.line(`${o.pos.id}:${res}`, tech[res], e) || this.line(`sk:${o.pos.skill}:${res}`, sk[res], e) || this.line(`def:${res}`, def[res], e);
     let main = null;
-    if (o.kind !== "work" && N.approaches && N.approaches[o.kind]) main = this.line(`ap:${o.kind}:${res}`, N.approaches[o.kind][res], e);
-    else if (o.repeat) main = this.line(`rep:${o.pos.id}`, tech.repeat || sk.repeat || def.repeat, e);
-    else main = this.line(`${o.pos.id}:${res}`, tech[res], e) || this.line(`sk:${o.pos.skill}:${res}`, sk[res], e) || this.line(`def:${res}`, def[res], e);
+    if ((o.kind === "work" || o.kind === "focus") && o.repeat) main = this.line(`rep:${o.pos.id}`, tech.repeat || sk.repeat || def.repeat, e);
+    else if (o.kind === "focus") main = (o.success ? this.line(`focus:${o.pos.id}`, tech.focus, e) : null) || this.line(`ap:focus:${res}`, ap[res], e) || own();
+    else if (o.kind !== "work") main = this.line(`ap:${o.kind}:${res}`, ap[res], e) || own();
+    else main = own();
+    const isTech = o.kind === "work" || o.kind === "focus";
+    if (isTech && !o.repeat && o.success && o.disliked) main = this.line("disliked", N.disliked, e) || main;
     if (main) parts.push(main);
-    if (o.success && o.liked) parts.push(this.line("liked", N.liked, e));
-    else if (o.success && o.disliked) parts.push(this.line("disliked", N.disliked, e));
+    if (isTech && !o.repeat && o.success && o.liked) parts.push(this.line("liked", N.liked, e));
     const band = this.band(e);
-    parts.push(this.line("react:" + band, (N.reactions || {})[band], e));
+    const rb = (N.reactions || {})[band];
+    parts.push(this.line(`react:${band}:${res}`, Array.isArray(rb) ? rb : (rb || {})[res], e));
     return parts.filter(Boolean).join(" ");
   },
   finish(e, success) {
