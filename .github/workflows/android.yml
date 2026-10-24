@@ -1,0 +1,58 @@
+name: Android APK
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: "8.7"
+
+      - name: Bundle the game into the app
+        run: |
+          A=android/app/src/main/assets
+          mkdir -p "$A/fonts"
+          cp index.html narration.js icon.svg "$A/"
+          if [ -f narration.custom.js ]; then cp narration.custom.js "$A/"; fi
+          cp fonts/*.woff2 "$A/fonts/"
+
+      - name: Build APK
+        working-directory: android
+        env:
+          VERSION_CODE: ${{ github.run_number }}
+        run: gradle assembleRelease --no-daemon --stacktrace
+
+      - name: Name the APK
+        run: cp android/app/build/outputs/apk/release/app-release.apk MedievalCourtesan.apk
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: MedievalCourtesan-apk
+          path: MedievalCourtesan.apk
+
+      - name: Publish release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: build-${{ github.run_number }}
+          name: Medieval Courtesan (build ${{ github.run_number }})
+          body: |
+            Offline Android build of the game at commit ${{ github.sha }}.
+            Download MedievalCourtesan.apk below, open it on your phone, and allow installing from this source if asked.
+            New builds install over the old one and keep your saves.
+          files: MedievalCourtesan.apk
+          make_latest: true

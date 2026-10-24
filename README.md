@@ -1,50 +1,56 @@
 # Medieval Courtesan
 
-A single-file, choice-driven life sim set in a medieval city. Start on the streets, earn a room in a brothel, and eventually run a house of your own — or get out of the life before it breaks you.
+A choice-driven RPG set in a medieval kingdom. Rise through the Courtesan's Guild from a lowly Initiate in the port of Saltmere to Guild Master in the capital, or find another way out before the life breaks you.
 
 All characters are adults. The game contains mature themes.
 
 ## Play
 
-Open `index.html` in any modern browser. No build step, no dependencies.
+- **Android:** download the latest APK from the repository's **Releases** page and install it. It runs fully offline.
+- **Browser:** open `index.html` in any modern browser, or enable GitHub Pages (Settings → Pages → deploy from `main`, root folder) and play at `https://unregisteredmusket.github.io/Brothel-Sim/`. After one visit, the web version also works offline.
 
-To host it, enable GitHub Pages for this repository (Settings → Pages → deploy from `main`, root folder). The game will then be playable at `https://unregisteredmusket.github.io/Brothel-Sim/`.
+## The climb
+
+- **Seven guild ranks:** Initiate, Companion, Consort, Favored, Celebrated, Paragon, Guild Master.
+- **Standing** is your guild score. Good performances, courtships and quests raise it; poor performances, public snubs, failed quests and unpaid dues lower it.
+- **Rank trials.** Each promotion needs enough Standing, level and fame, then a trial: an observed encounter or a courtship before the council's envoy. Promotions pay a purse and grant an attribute increase.
+- **Demotion and expulsion.** Fall too far below your rank's threshold and you're demoted. Fall below −25 as an Initiate and the guild strikes you from its rolls: game over.
+- **Six cities,** each unlocked by rank: Saltmere (port), Ashford (wool town), Varenne (bankers), Lysmoor (cathedral city), Aurelle (royal court), and Valcourt (the capital and Guild Hall). Each has its own clientele, tastes, lodging costs, NPCs and quests. Travel costs coin and a night on the road.
+- **Ironman mode** (optional): one life, no reloading, and the save is deleted on a loss.
+
+## Courtship
+
+Charm promising clients in taprooms; from Consort, attend salons; from Celebrated, attend court. Each courtship is a few exchanges: pick a tone (Flatter, Wit, Coy, Bold, Listen) against the other person's hidden personality. Read them first with Insight to learn what they love and hate. Win and you can accept a lucrative private invitation or seek their patronage; fail badly and the whole room sees the snub.
+
+## Quests
+
+Two side quests in every city, with no central plot. They use scripted dialogue scenes, special clients and courtships. Rewards include coin, Standing, fame, techniques and allies.
+
+## Endings
+
+- **Guild Master:** pass the final two-part trial before the Guild Council in Valcourt.
+- **Retirement:** reach Consort and save 1500 coin (1000 with the Freedom motive), debt-free.
+- **Sir Edric:** win his heart, then win over his proud mother.
+- **Marlow:** buy out your contract and plead your case, or slip away by night and risk being caught.
+- **Losses:** expulsion from the guild, or burnout (trauma or health).
+
+## Encounters
+
+Clients have requests, likes, dislikes and a hidden temperament. Encounters run up to five rounds; every option shows its success chance. Varying techniques builds rhythm, repetition loses effect, and trouble can break out afterward.
 
 ## Character creation
 
-Ten short steps with a live character sheet that highlights what each choice changes, and a Back button on every step:
+Ten short steps with a live character sheet and a Back button on every step: name and gender, looks and build, difficulty, path and specialty, a 27-point attribute buy, background (each with a hook), motivation, strengths, flaws and a feat, then a review with Ironman toggle. Or roll a random life, or start in one tap as The Socialite, The Survivor or The Mistress of Rope.
 
-- **Name and gender** (female or male), with a random-name option.
-- **Looks and build.** Appearance sets your pay; build gives a small perk.
-- **Difficulty**, **path** (class) and **specialty**.
-- **Attributes** with a 27-point buy and a recommended spread for each path.
-- **Past.** Each background gives a bonus and a hook: an old acquaintance or a discount.
-- **Reason.** Your motivation gives a perk, a goal shown in the House tab, and an epilogue line in your ending.
-- **Strengths, flaws and a feat**, all toggleable.
-- **Review** with an edit button for every step.
+## Writing your own narration
 
-Or skip it: roll a random life, or start in one tap as The Socialite, The Survivor or The Mistress of Rope.
+Encounter descriptions live in `narration.js`. To add your own lines without touching the game:
 
-## How it plays
+1. Copy `narration.custom.template.js` to `narration.custom.js` and fill in any lists. Your lines are added to the built-in ones, or replace them for a technique with `replace: true`.
+2. Open `checker.html` in a browser. It assembles every combination of lines and flags broken tokens, verb-agreement errors, wrong pronouns, capitalization and more.
 
-- **Three stages.** Streets → Brothel Worker → Brothel Manager. Each step up needs coin, reputation, clients served, and no debt.
-- **Clients are a gamble.** Each one has a request, likes and dislikes, and a hidden temperament (nervous, demanding, generous, dangerous). Size them up with Insight before you accept.
-- **Encounters play out over up to five rounds.** Every option shows its success chance. Varying your techniques builds rhythm; repeating one loses effect.
-- **Trouble happens.** Clients may refuse to pay or turn rough. Control, Persuasion, STR, a hired bruiser, or the house's bouncer can get you out of it.
-- **Stats bite back.** Stress at 100 causes a breakdown. Low health means disadvantage on every roll. Trauma at 100 ends your career.
-- **Money matters.** A market for upgrades and recovery, a brothel cut you can bargain down, daily upkeep, debt with interest and creditors, and staff whose wages and loyalty you have to manage.
-- **People remember you.** Sir Edric, Marlow and Madam Briar each have a story that unfolds as your relationship grows.
-- **Random events.** Festivals, crackdowns, fevers, cutpurses, admirers, shakedowns, rival houses, staff squabbles.
-- **Five endings.** Retire wealthy, claim the city's finest house, leave with a lord, run away to sea, or burn out.
+The header of `narration.js` documents the tokens (`{client}`, `{they}`, `{s}`, `{are}`…) and pose tags. Players can switch between full and brief narration in the Journal tab.
 
-## Narration
+## Building the Android app
 
-Encounter descriptions live in `narration.js`, separate from the game logic, so you can rewrite or extend them freely. Each turn the game combines a line for the technique or approach you used (success, failure or repetition), a line if the client loves or dislikes it, and a reaction line based on how close they are. Lines never repeat until the rest of their list has been used.
-
-Lines support tokens such as `{client}`, `{name}`, `{they}`, `{their}` and `{move}`; the header of `narration.js` explains them all. Players can switch between full and brief narration in the Journal tab. If `narration.js` is missing, the game falls back to short mechanical text.
-
-## Interface
-
-Mobile-first layout with a persistent HUD, a scene card for what's happening now, and tabs for **Work**, **Self** (character sheet), **House** (progress, money, staff, people), **Market**, and **Journal** (ledger, full log, save/load). Stat changes appear as chips after every action, and dice rolls are shown with the full math.
-
-The game autosaves at every dawn to browser storage.
+`.github/workflows/android.yml` builds the APK on every push to `main` and publishes it as a release. The Android project in `android/` is a thin offline WebView wrapper around the game files.

@@ -1,0 +1,6 @@
+# Game files are copied in at build time by the workflow.
+/app/src/main/assets/
+.gradle/
+build/
+/app/build/
+local.properties
